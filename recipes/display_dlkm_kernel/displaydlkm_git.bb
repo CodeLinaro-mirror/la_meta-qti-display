@@ -15,7 +15,7 @@ do_configure[depends] += "virtual/kernel:do_shared_workdir"
 FILESPATH   =+ "${WORKSPACE}:"
 SRC_URI     =  "file://display/vendor/qcom/opensource/display-drivers/"
 SRC_URI    +=  "file://start_display_le"
-SRC_URI    +=  "file://display.service"
+SRC_URI    +=  "file://display@.service"
 SRC_URI    +=  "file://display_load.conf"
 
 S = "${WORKDIR}/display/vendor/qcom/opensource/display-drivers"
@@ -65,15 +65,15 @@ do_install() {
         ${STAGING_DIR_NATIVE}/usr/libexec/aarch64-oe-linux/gcc/aarch64-oe-linux/9.3.0/strip \
               --strip-debug ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm/msm_drm.ko
 
-        ${STAGING_KERNEL_BUILDDIR}/scripts/sign-file sha512 ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.pem \
+        LD_LIBRARY_PATH=${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/prebuilts/kernel-build-tools/linux-x86/lib64/ \
+        ${STAGING_KERNEL_BUILDDIR}/scripts/sign-file sha1 ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.pem \
              ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.x509 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm/msm_drm.ko
 
 	install -m 0755 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm/msm_drm.ko -D ${D}${libdir}/modules/msm_drm.ko
 	cp -r ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/usr/include/display ${STAGING_KERNEL_BUILDDIR}/usr/include/display
 	cp -r ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/usr/include/display ${D}/usr/include/
-	install -m 0644 ${WORKDIR}/display.service -D ${D}${systemd_unitdir}/system/display.service
+	install -m 0644 ${WORKDIR}/display@.service -D ${D}${systemd_unitdir}/system/display@.service
 	install -m 0755 ${WORKDIR}/display_load.conf -D ${D}${sysconfdir}/modules-load.d/display_load.conf
-	ln -sf ${systemd_unitdir}/system/display.service ${D}${systemd_unitdir}/system/multi-user.target.wants/display.service
 }
 
 do_deploy() {
@@ -84,6 +84,5 @@ addtask do_deploy after do_install
 
 FILES_${PN} += "${sysconfdir}/*"
 FILES_${PN} += "/etc/initscripts/start_display_le"
-FILES_${PN} += "${systemd_unitdir}/system/display.service"
-FILES_${PN} += "${systemd_unitdir}/system/multi-user.target.wants/display.service"
+FILES_${PN} += "${systemd_unitdir}/system/display@.service"
 FILES_${PN} += "${libdir}/modules/*"

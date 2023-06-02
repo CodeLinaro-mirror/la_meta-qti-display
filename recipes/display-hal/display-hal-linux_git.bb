@@ -1,5 +1,7 @@
 inherit autotools pkgconfig
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 DESCRIPTION = "display Library"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
@@ -12,8 +14,8 @@ SRC_URI     =  "file://display/hardware/qcom/display"
 
 S = "${WORKDIR}/display/hardware/qcom/display"
 
-DEPENDS += "virtual/kernel libdrm drm binder displaydlkm"
-DEPENDS += "libhardware linux-msm-headers display-commonsys gbm"
+DEPENDS += "virtual/kernel libdrm binder displaydlkm"
+DEPENDS += "libhardware linux-msm-headers display-commonsys"
 
 LDFLAGS += "-llog -lutils -lcutils"
 

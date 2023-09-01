@@ -3,11 +3,15 @@ DESCRIPTION = "Provide QC contributed GBM (Generic Buffer Management) \
 library."
 HOMEPAGE = "https://git.codelinaro.org/"
 
-LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
-${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
+LICENSE = "BSD-3-Clause & BSD-3-Clause-Clear"
+BSD-3-Clause_LICENSE  = "file://inc/gbm.h;beginline=5;endline=30"
+BSD-3-Clause-Clear_LICENSE = "file://inc/gbm.h;beginline=63;endline=93"
 
-DEPENDS = "glib-2.0 linux-msm-headers displaydlkm wayland libdmabufheap libvmmem display-commonsys"
+LIC_FILES_CHKSUM = " \
+${BSD-3-Clause-Clear_LICENSE};md5=01550572dbf950bfb945602fe114d132 \
+${BSD-3-Clause_LICENSE};md5=966a1bac2e99d152d17ed2b6d7ad8bab"
+
+DEPENDS = "glib-2.0 wayland"
 PROVIDES += "virtual/libgbm libgbm"
 
 FILESPATH   =+ "${WORKSPACE}:"
@@ -18,7 +22,7 @@ SRC_URI:append = " file://pkgconfig/gbm.pc"
 SRCREV = "${AUTOREV}"
 S = "${WORKDIR}/display/vendor/qcom/opensource/display/libgbm"
 
-inherit autotools-brokensep qprebuilt pkgconfig
+inherit autotools-brokensep pkgconfig
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 

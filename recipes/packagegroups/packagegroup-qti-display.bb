@@ -4,7 +4,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit packagegroup
 
-LICENSE = "BSD-3-Clause"
+LICENSE = "BSD-3-Clause & BSD-3-Clause-Clear"
 
 PROVIDES = "${PACKAGES}"
 
@@ -15,10 +15,9 @@ PACKAGES = ' \
 RDEPENDS:packagegroup-qti-display = ' \
     libdrm \
     display-hal-linux \
-    mmdlkm \
-    displaydlkm \
     gbm \
+    wayland \
+    wayland-protocols \
     weston \
-    display-commonsys \
     '
 

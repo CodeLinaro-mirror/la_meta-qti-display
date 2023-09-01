@@ -8,14 +8,18 @@ FILESEXTRAPATHS:prepend := "${WORKSPACE}/display/:"
 FILESEXTRAPATHS:prepend := "${THISDIR}/weston-launch:"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI   = " file://weston-kalama.ini \
+              file://weston.png \
+              file://weston.desktop \
+              file://xwayland.weston-start \
+              file://systemd-notify.weston-start \
               file://display/vendor/qcom/opensource/display/weston/"
 
 S = "${WORKDIR}/display/vendor/qcom/opensource/display/weston"
 
 inherit meson pkgconfig useradd distro_features_check
-DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0"
-DEPENDS += "wayland wayland-protocols libinput adreno gbm pango wayland-native"
-DEPENDS += "libsync display-hal-linux display-commonsys"
+DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0 property-vault"
+DEPENDS += "wayland wayland-protocols libinput gbm pango wayland-native"
+DEPENDS += "display-hal-linux "
 
 EXTRA_OEMESON += "-Ddeprecated-wl-shell=true"
 EXTRA_OEMESON += "-Dbackend-default=auto -Dbackend-rdp=false -Dpipewire=false"
@@ -31,16 +35,16 @@ PACKAGECONFIG[sdm] = "-Dbackend-sdm=true,-Dbackend-sdm=false"
 # Weston with disabling display power key
 PACKAGECONFIG[disablepowerkey] = "-Ddisable-power-key=true,-Ddisable-power-key=false"
 
-LDFLAGS  += "-lcutils -ldrmutils -ldisplaydebug -lglib-2.0 -lgbmutils"
+LDFLAGS  += "-ldrmutils -ldisplaydebug -lglib-2.0"
 
 #meson script's CPP flags
 CXXFLAGS += "-I${STAGING_INCDIR}/sdm"
-CXXFLAGS += "-I${WORKSPACE}/display/vendor/qcom/opensource/commonsys-intf/display/include"
 # select compositor, enable simple and demo clients and enable EGL
-PACKAGECONFIG:append:kalama = "sdm clients egl shell-desktop disablepowerkey screenshare \
+# Need to check who will provide virtual/egl
+PACKAGECONFIG:append:qcm6490 = "sdm clients shell-desktop disablepowerkey screenshare \
                                shell-fullscreen shell-ivi image-jpeg"
 
-do_install:append:kalama() {
+do_install:append:qcm6490() {
     install -m 0644 ${WORKDIR}/weston-kalama.ini -D ${D}${sysconfdir}/xdg/weston/weston.ini
 }
 

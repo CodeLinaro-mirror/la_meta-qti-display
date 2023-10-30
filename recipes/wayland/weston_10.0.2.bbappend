@@ -41,7 +41,7 @@ LDFLAGS  += "-ldrmutils -ldisplaydebug -lglib-2.0"
 CXXFLAGS += "-I${STAGING_INCDIR}/sdm"
 # select compositor, enable simple and demo clients and enable EGL
 # Need to check who will provide virtual/egl
-PACKAGECONFIG:append:qcm6490 = "sdm clients shell-desktop disablepowerkey screenshare \
+PACKAGECONFIG:append:qcm6490 = "sdm egl clients shell-desktop disablepowerkey screenshare \
                                shell-fullscreen shell-ivi image-jpeg"
 
 do_install:append:qcm6490() {

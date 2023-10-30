@@ -18,7 +18,8 @@ SRC_URI     =  "file://display/hardware/qcom/display"
 
 S = "${WORKDIR}/display/hardware/qcom/display/"
 
-EXTRA_OECONF += " --with-sanitized-headers=${STAGING_INCDIR}/linux-msm/usr/include"
+EXTRA_OECONF += " --with-sanitized-headers=${STAGING_INCDIR}/linux-kernel-qcom/usr/include"
+EXTRA_OECONF += " --enable-displayle"
 
 PACKAGECONFIG ?= " \
                  ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'drm', '', d)} \
@@ -27,7 +28,8 @@ PACKAGECONFIG ?= " \
 PACKAGECONFIG[drm] = "--enable-sdmhaldrm, --disable-sdmhaldrm, libdrm, libdrm"
 
 DEPENDS += "libdrm \
-            gbm"
+            gbm \
+            linux-kernel-qcom-headers"
 
 SOLIBS = ".so"
 FILES_SOLIBSDEV = ""

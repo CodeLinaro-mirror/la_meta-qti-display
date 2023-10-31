@@ -29,7 +29,9 @@ PACKAGECONFIG[drm] = "--enable-sdmhaldrm, --disable-sdmhaldrm, libdrm, libdrm"
 
 DEPENDS += "libdrm \
             gbm \
-            linux-kernel-qcom-headers"
+            linux-kernel-qcom-headers \
+            displaydlkm \
+            "
 
 SOLIBS = ".so"
 FILES_SOLIBSDEV = ""

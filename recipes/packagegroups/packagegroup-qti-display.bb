@@ -19,5 +19,6 @@ RDEPENDS:packagegroup-qti-display = ' \
     wayland \
     wayland-protocols \
     weston \
+    kernel-module-displaydlkm \
     '
 

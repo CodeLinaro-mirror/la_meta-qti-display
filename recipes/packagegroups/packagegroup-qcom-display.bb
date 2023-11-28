@@ -9,10 +9,10 @@ LICENSE = "BSD-3-Clause & BSD-3-Clause-Clear"
 PROVIDES = "${PACKAGES}"
 
 PACKAGES = ' \
-    packagegroup-qti-display \
+    packagegroup-qcom-display \
     '
 
-RDEPENDS:packagegroup-qti-display = ' \
+RDEPENDS:packagegroup-qcom-display = ' \
     libdrm \
     display-hal-linux \
     gbm \

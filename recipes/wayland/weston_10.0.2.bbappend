@@ -13,7 +13,7 @@ SRC_URI   = " file://weston-kalama.ini \
 S = "${WORKDIR}/display/vendor/qcom/opensource/display/weston"
 
 inherit meson pkgconfig useradd distro_features_check
-DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0"
+DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0 binder"
 DEPENDS += "wayland wayland-protocols libinput adreno gbm pango wayland-native"
 DEPENDS += "libsync display-hal-linux display-commonsys"
 
@@ -31,10 +31,11 @@ PACKAGECONFIG[sdm] = "-Dbackend-sdm=true,-Dbackend-sdm=false"
 # Weston with disabling display power key
 PACKAGECONFIG[disablepowerkey] = "-Ddisable-power-key=true,-Ddisable-power-key=false"
 
-LDFLAGS  += "-lcutils -ldrmutils -ldisplaydebug -lglib-2.0 -lgbmutils"
+LDFLAGS  += "-lcutils -ldrmutils -ldisplaydebug -lglib-2.0 -lgbmutils -lutils -lbinder"
 
 #meson script's CPP flags
 CXXFLAGS += "-I${STAGING_INCDIR}/sdm"
+CXXFLAGS += "-I${STAGING_INCDIR}/display/display"
 CXXFLAGS += "-I${WORKSPACE}/display/vendor/qcom/opensource/commonsys-intf/display/include"
 # select compositor, enable simple and demo clients and enable EGL
 PACKAGECONFIG:append:kalama = "sdm clients egl shell-desktop disablepowerkey screenshare \

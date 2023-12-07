@@ -4,8 +4,8 @@ library."
 HOMEPAGE = "https://git.codelinaro.org/"
 
 LICENSE = "BSD-3-Clause & BSD-3-Clause-Clear"
-BSD-3-Clause_LICENSE  = "file://inc/gbm.h;beginline=5;endline=30"
-BSD-3-Clause-Clear_LICENSE = "file://inc/gbm.h;beginline=63;endline=93"
+BSD-3-Clause_LICENSE  = "file://inc/gbm.h;beginline=2;endline=27"
+BSD-3-Clause-Clear_LICENSE = "file://inc/gbm.h;beginline=60;endline=90"
 
 LIC_FILES_CHKSUM = " \
 ${BSD-3-Clause-Clear_LICENSE};md5=01550572dbf950bfb945602fe114d132 \

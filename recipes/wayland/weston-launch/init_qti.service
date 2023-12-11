@@ -34,8 +34,8 @@
 [Unit]
 Description=Init-display Service
 SourcePath=/etc/initscripts/init_qti_display
-Requires=leprop.service
-After=leprop.service
+Requires=property-vault.service
+After=property-vault.service
 [Service]
 User=root
 Group=root

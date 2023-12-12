@@ -35,7 +35,7 @@
 Description=Init-display Service
 SourcePath=/etc/initscripts/init_qti_display
 Requires=property-vault.service
-After=property-vault.service
+After=property-vault.service sysinit.target local-fs.target
 [Service]
 User=root
 Group=root

@@ -14,6 +14,7 @@ PACKAGES = ' \
 
 RDEPENDS:packagegroup-qcom-display = ' \
     libdrm \
+    libdrm-tests \
     display-hal-linux \
     gbm \
     wayland \

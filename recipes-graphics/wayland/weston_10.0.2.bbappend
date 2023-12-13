@@ -16,7 +16,7 @@ SRC_URI   = " file://weston-kalama.ini \
 
 S = "${WORKDIR}/display/vendor/qcom/opensource/display/weston"
 
-inherit meson pkgconfig useradd distro_features_check
+inherit meson pkgconfig useradd
 DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0 property-vault"
 DEPENDS += "wayland wayland-protocols libinput gbm pango wayland-native"
 DEPENDS += "display-hal-linux "

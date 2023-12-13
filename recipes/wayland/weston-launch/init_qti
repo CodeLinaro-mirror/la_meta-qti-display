@@ -77,7 +77,8 @@ case "$1" in
         fi
 
         echo "WESTON INITIALIZATION STARTUP"
-        weston --tty=2 --idle-time=0 --log=/tmp/weston.log --config=/etc/xdg/weston/weston.ini &
+        weston --tty=2 --idle-time=0 --log=/tmp/weston.log --config=/etc/xdg/weston/weston.ini \
+        --continue-without-input &
 
         # Wait wayland socket node create.
         filename=$(find $XDG_RUNTIME_DIR -maxdepth 1 -name 'wayland-*' -print -quit)

@@ -8,18 +8,9 @@ LICENSE = "BSD-3-Clause & BSD-3-Clause-Clear"
 
 PROVIDES = "${PACKAGES}"
 
-PACKAGES = ' \
-    packagegroup-qcom-display \
-    '
+PACKAGES = "${PN}"
 
-RDEPENDS:packagegroup-qcom-display = ' \
-    libdrm \
-    libdrm-tests \
+RDEPENDS:packagegroup-qcom-display = " \
     display-hal-linux \
-    gbm \
-    wayland \
-    wayland-protocols \
-    weston \
     kernel-module-displaydlkm \
-    '
-
+    "

@@ -1,48 +1,48 @@
-SUMMARY = "Weston, a Wayland compositor"
-DESCRIPTION = "Weston is the reference implementation of a Wayland compositor"
-HOMEPAGE = "https://git.codelinaro.org/"
-LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70"
 
-FILESEXTRAPATHS:prepend := "${WORKSPACE}/display/:"
 FILESEXTRAPATHS:prepend := "${THISDIR}/weston-launch:"
-FILESPATH =+ "${WORKSPACE}:"
-SRC_URI   = " file://weston-kalama.ini \
+FILESPATH =+ "${WORKSPACE}/display/vendor/qcom/opensource/display/:"
+
+SRC_URI = "   file://weston-kalama.ini \
               file://weston.png \
               file://weston.desktop \
               file://xwayland.weston-start \
               file://systemd-notify.weston-start \
-              file://display/vendor/qcom/opensource/display/weston/"
+              file://weston/"
 
-S = "${WORKDIR}/display/vendor/qcom/opensource/display/weston"
+S = "${WORKDIR}/weston"
 
-inherit meson pkgconfig useradd
-DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0 property-vault"
-DEPENDS += "wayland wayland-protocols libinput gbm pango wayland-native"
-DEPENDS += "display-hal-linux "
+DEPENDS:append:qcom = " property-vault gbm display-hal-linux libdmabufheap"
 
 EXTRA_OEMESON += "-Ddeprecated-wl-shell=true"
-EXTRA_OEMESON += "-Dbackend-default=auto -Dbackend-rdp=false -Dpipewire=false"
+EXTRA_OEMESON += "-Dbackend-default=auto -Dbackend-rdp=false"
 
 RRECOMMENDS:${PN} = "weston-launch liberation-fonts"
 
-REQUIRED_DISTRO_FEATURES:remove = "opengl"
-REQUIRED_DISTRO_FEATURES:remove = "pam"
+REQUIRED_DISTRO_FEATURES:remove:qcom = "opengl"
 
-PACKAGECONFIG ??= ""
+# select compositor, enable simple and demo clients and enable EGL
+PACKAGECONFIG:qcom = " \
+                 sdm \
+                 egl \
+                 clients \
+                 shell-desktop \
+                 disablepowerkey \
+                 screenshare \
+                 shell-fullscreen \
+                 shell-ivi \
+                 image-jpeg \
+                 "
+
 # Weston on SDM
 PACKAGECONFIG[sdm] = "-Dbackend-sdm=true,-Dbackend-sdm=false"
 # Weston with disabling display power key
 PACKAGECONFIG[disablepowerkey] = "-Ddisable-power-key=true,-Ddisable-power-key=false"
 
-LDFLAGS  += "-ldrmutils -ldisplaydebug -lglib-2.0"
+LDFLAGS  += "-ldrmutils -ldisplaydebug -lglib-2.0 -ldmabufheap"
 
 #meson script's CPP flags
 CXXFLAGS += "-I${STAGING_INCDIR}/sdm"
-# select compositor, enable simple and demo clients and enable EGL
-# Need to check who will provide virtual/egl
-PACKAGECONFIG:append:qcm6490 = "sdm egl clients shell-desktop disablepowerkey screenshare \
-                               shell-fullscreen shell-ivi image-jpeg"
 
 do_install:append:qcm6490() {
     install -m 0644 ${WORKDIR}/weston-kalama.ini -D ${D}${sysconfdir}/xdg/weston/weston.ini

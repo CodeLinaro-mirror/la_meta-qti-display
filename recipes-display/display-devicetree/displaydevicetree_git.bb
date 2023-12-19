@@ -28,4 +28,3 @@ do_deploy() {
     ${DEPLOYDIR}/tech_dtbs/
 }
 addtask do_deploy after do_install
-RM_WORK_EXCLUDE += "${PN}"

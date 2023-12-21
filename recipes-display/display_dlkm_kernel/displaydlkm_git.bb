@@ -25,4 +25,3 @@ do_install:append() {
 RPROVIDES:${PN} += "kernel-module-displaydlkm"
 MAKE_TARGETS = "modules"
 MODULES_INSTALL_TARGET = "modules_install"
-RM_WORK_EXCLUDE += "${PN}"

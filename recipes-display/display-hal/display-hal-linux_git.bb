@@ -13,10 +13,10 @@ ${BSD-3-Clause_LICENSE};md5=ef93dc3f1e145b6c1f89b90a5230ef8a"
 
 PR = "r8"
 
-FILESPATH   =+ "${WORKSPACE}:"
-SRC_URI     =  "file://display/hardware/qcom/display"
+FILESPATH   =+ "${WORKSPACE}/display/hardware/qcom:"
+SRC_URI     =  "file://display/"
 
-S = "${WORKDIR}/display/hardware/qcom/display"
+S = "${WORKDIR}/display"
 
 EXTRA_OECONF += " --with-sanitized-headers=${STAGING_INCDIR}/linux-kernel-qcom/usr/include"
 EXTRA_OECONF += " --enable-displayle"
@@ -33,5 +33,19 @@ DEPENDS += "libdrm \
             displaydlkm \
             "
 
-SOLIBS = ".so"
-FILES_SOLIBSDEV = ""
+QDCM_JSON = "qdcm_calib_data_nt36672e_lcd_video_mode_dsi_novatek_panel_with_DSC.json"
+
+do_install:append() {
+  install -d ${D}/usr/data/display
+  install -m 0644 ${S}/config/snapdragon_color_libs_config.xml \
+-D ${D}/usr/data/display/snapdragon_color_libs_config.xml
+  install -m 0644 ${S}/config/clstc_config_library.xml \
+-D ${D}/usr/data/display/clstc_config_library.xml
+  install -m 0644 ${S}/config/${QDCM_JSON} -D ${D}/usr/data/display/${QDCM_JSON}
+}
+
+PACKAGES = "${PN}-dbg ${PN}-dev ${PN}"
+FILES:${PN}  += " /usr/data/display/* "
+FILES:${PN}  += " ${libdir}/* "
+FILES:${PN}-dev  = " ${includedir}/* "
+FILES:${PN}-dbg  = " ${libdir}/.debug/* "

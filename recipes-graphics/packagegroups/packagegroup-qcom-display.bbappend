@@ -1,4 +1,4 @@
-RDEPENDS:packagegroup-qcom-display += " \
+RDEPENDS:${PN}:append = " \
     libdrm \
     libdrm-tests \
     gbm \

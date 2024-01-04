@@ -1,7 +1,5 @@
 SUMMARY = "gbm"
-DESCRIPTION = "Provide QC contributed GBM (Generic Buffer Management) \
-library."
-HOMEPAGE = "https://git.codelinaro.org/"
+DESCRIPTION = "Provide QC contributed GBM (Generic Buffer Management) library."
 
 LICENSE = "BSD-3-Clause & BSD-3-Clause-Clear"
 BSD-3-Clause_LICENSE  = "file://inc/gbm.h;beginline=2;endline=27"
@@ -19,7 +17,6 @@ SRC_URI     =  "file://libgbm/"
 S = "${WORKDIR}/libgbm"
 
 SRC_URI:append = " file://pkgconfig/gbm.pc"
-SRCREV = "${AUTOREV}"
 
 inherit autotools-brokensep pkgconfig
 

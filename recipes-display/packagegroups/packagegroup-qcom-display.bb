@@ -14,5 +14,4 @@ RDEPENDS:packagegroup-qcom-display = " \
     display-hal-linux \
     kernel-module-displaydlkm \
     displaydevicetree \
-    libcec \
     "

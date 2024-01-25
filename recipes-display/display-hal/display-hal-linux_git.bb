@@ -1,17 +1,16 @@
 inherit autotools pkgconfig systemd
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 DESCRIPTION = "display Library"
 LICENSE = "BSD-3-Clause & BSD-3-Clause-Clear"
 BSD-3-Clause_LICENSE  = "file://sdm/include/core/display_interface.h;beginline=2;endline=22"
 BSD-3-Clause-Clear_LICENSE = "file://sdm/include/core/display_interface.h;beginline=28;endline=29"
 
 LIC_FILES_CHKSUM = " \
-${BSD-3-Clause-Clear_LICENSE};md5=de893869f66f7d366d6b07f5cec50842 \
-${BSD-3-Clause_LICENSE};md5=ef93dc3f1e145b6c1f89b90a5230ef8a"
+    ${BSD-3-Clause-Clear_LICENSE};md5=de893869f66f7d366d6b07f5cec50842 \
+    ${BSD-3-Clause_LICENSE};md5=ef93dc3f1e145b6c1f89b90a5230ef8a \
+"
 
-PR = "r8"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 FILESPATH   =+ "${WORKSPACE}/display/hardware/qcom:"
 SRC_URI     =  "file://display/"

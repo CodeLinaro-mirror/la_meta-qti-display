@@ -1,4 +1,4 @@
-SUMMARY = "QTI Display package groups"
+SUMMARY = "QCOM Display package groups"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -10,7 +10,7 @@ PROVIDES = "${PACKAGES}"
 
 PACKAGES = "${PN}"
 
-RDEPENDS:packagegroup-qcom-display = " \
+RDEPENDS:${PN} = " \
     display-hal-linux \
     kernel-module-displaydlkm \
     displaydevicetree \

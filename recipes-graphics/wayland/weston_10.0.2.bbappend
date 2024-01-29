@@ -3,7 +3,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70"
 FILESEXTRAPATHS:prepend := "${THISDIR}/weston-launch:"
 FILESPATH =+ "${WORKSPACE}/display/vendor/qcom/opensource/display/:"
 
-SRC_URI = "   file://weston-kalama.ini \
+SRC_URI = "   file://weston.ini \
               file://weston.png \
               file://weston.desktop \
               file://xwayland.weston-start \
@@ -44,8 +44,8 @@ LDFLAGS  += "-ldrmutils -ldisplaydebug -lglib-2.0 -ldmabufheap"
 #meson script's CPP flags
 CXXFLAGS += "-I${STAGING_INCDIR}/sdm"
 
-do_install:append:qcm6490() {
-    install -m 0644 ${WORKDIR}/weston-kalama.ini -D ${D}${sysconfdir}/xdg/weston/weston.ini
+do_install:append() {
+    install -m 0644 ${WORKDIR}/weston.ini -D ${D}${sysconfdir}/xdg/weston/weston.ini
 }
 
 FILES:${PN} += "${bindir}/*"

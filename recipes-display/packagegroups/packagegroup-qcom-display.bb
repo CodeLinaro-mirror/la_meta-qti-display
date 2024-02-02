@@ -14,4 +14,5 @@ RDEPENDS:${PN} = " \
     display-hal-linux \
     kernel-module-displaydlkm \
     displaydevicetree \
+    libcec \
     "

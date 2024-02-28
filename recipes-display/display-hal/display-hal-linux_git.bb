@@ -6,7 +6,7 @@ BSD-3-Clause_LICENSE  = "file://sdm/include/core/display_interface.h;beginline=2
 BSD-3-Clause-Clear_LICENSE = "file://sdm/include/core/display_interface.h;beginline=28;endline=29"
 
 LIC_FILES_CHKSUM = " \
-    ${BSD-3-Clause-Clear_LICENSE};md5=de893869f66f7d366d6b07f5cec50842 \
+    ${BSD-3-Clause-Clear_LICENSE};md5=05a078dc8c6f02f6f67fa9078a5e2a3c \
     ${BSD-3-Clause_LICENSE};md5=ef93dc3f1e145b6c1f89b90a5230ef8a \
 "
 

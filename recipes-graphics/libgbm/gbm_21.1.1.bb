@@ -12,9 +12,9 @@ ${BSD-3-Clause_LICENSE};md5=966a1bac2e99d152d17ed2b6d7ad8bab"
 DEPENDS = "glib-2.0 wayland displaydlkm"
 PROVIDES += "virtual/libgbm libgbm"
 
-FILESPATH   =+ "${WORKSPACE}/display/vendor/qcom/opensource/display:"
-SRC_URI     =  "file://libgbm/"
-S = "${WORKDIR}/libgbm"
+FILESPATH   =+ "${WORKSPACE}:"
+SRC_URI     =  "file://display/vendor/qcom/opensource/display/libgbm/"
+S = "${WORKDIR}/display/vendor/qcom/opensource/display/libgbm"
 
 SRC_URI:append = " file://pkgconfig/gbm.pc"
 

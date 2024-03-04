@@ -5,10 +5,10 @@ DESCRIPTION = "QCOM Display drivers"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/${LICENSE};md5=801f80980d171dd6425610833a22dbe6"
 
-FILESPATH   =+ "${WORKSPACE}/display/vendor/qcom/opensource:"
-SRC_URI     =  "file://display-drivers/"
+FILESPATH   =+ "${WORKSPACE}:"
+SRC_URI     =  "file://display/vendor/qcom/opensource/display-drivers/"
 
-S = "${WORKDIR}/display-drivers"
+S = "${WORKDIR}/display/vendor/qcom/opensource/display-drivers"
 
 EXTRA_OEMAKE += "MACHINE='${MACHINE}'"
 

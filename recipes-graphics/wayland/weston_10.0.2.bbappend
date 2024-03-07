@@ -1,16 +1,16 @@
 LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/weston-launch:"
-FILESPATH =+ "${WORKSPACE}/display/vendor/qcom/opensource/display/:"
+FILESPATH =+ "${WORKSPACE}:"
 
 SRC_URI = "   file://weston.ini \
               file://weston.png \
               file://weston.desktop \
               file://xwayland.weston-start \
               file://systemd-notify.weston-start \
-              file://weston/"
+              file://display/vendor/qcom/opensource/display/weston/"
 
-S = "${WORKDIR}/weston"
+S = "${WORKDIR}/display/vendor/qcom/opensource/display/weston"
 
 DEPENDS:append:qcom = " property-vault gbm display-hal-linux libdmabufheap"
 

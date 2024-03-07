@@ -12,10 +12,10 @@ LIC_FILES_CHKSUM = " \
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-FILESPATH   =+ "${WORKSPACE}/display/hardware/qcom:"
-SRC_URI     =  "file://display/"
+FILESPATH   =+ "${WORKSPACE}:"
+SRC_URI     =  "file://display/hardware/qcom/display/"
 
-S = "${WORKDIR}/display"
+S = "${WORKDIR}/display/hardware/qcom/display"
 
 EXTRA_OECONF += " --with-sanitized-headers=${STAGING_INCDIR}/linux-kernel-qcom/usr/include"
 EXTRA_OECONF += " --enable-displayle"

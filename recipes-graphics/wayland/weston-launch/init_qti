@@ -110,6 +110,13 @@ case "$1" in
             export SHELL=/bin/sh
         fi
 
+        if [ -f /sys/devices/soc0/soc_id ]; then
+            soc_id=`cat /sys/devices/soc0/soc_id`
+            if [ "$soc_id" == 497 ] || [ "$soc_id" == 498 ]; then
+                `setprop sdm.max_pipe_config 2`
+            fi
+        fi
+
         export PATH_DRM_NODE=/dev/dri
         filename_drm=$(find $PATH_DRM_NODE  -name 'card0' -print -quit )
         while  [ -z "$filename_drm" ]; do

@@ -18,6 +18,7 @@ do_install() {
 
 do_compile() {
     oe_runmake ${EXTRA_OEMAKE} qcm6490-display
+    oe_runmake ${EXTRA_OEMAKE} qcm6490-display-idp-amoled
     oe_runmake ${EXTRA_OEMAKE} qcm6490-display-rb3
     oe_runmake ${EXTRA_OEMAKE} qcs8550-display
     oe_runmake ${EXTRA_OEMAKE} sa8775p-display

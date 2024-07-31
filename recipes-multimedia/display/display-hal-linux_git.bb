@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = " \
     ${BSD-3-Clause_LICENSE};md5=ef93dc3f1e145b6c1f89b90a5230ef8a \
 "
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+PACKAGE_ARCH = "${SOC_ARCH}"
 
 FILESPATH   =+ "${WORKSPACE}:"
 SRC_URI     =  "file://display/hardware/qcom/display/"

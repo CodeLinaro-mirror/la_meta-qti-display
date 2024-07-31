@@ -1,6 +1,6 @@
 SUMMARY = "QCOM Display package groups"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+PACKAGE_ARCH = "${SOC_ARCH}"
 
 inherit packagegroup
 
@@ -11,8 +11,11 @@ PROVIDES = "${PACKAGES}"
 PACKAGES = "${PN}"
 
 RDEPENDS:${PN} = " \
-    display-hal-linux \
     kernel-module-displaydlkm \
     displaydevicetree \
     libcec \
     "
+
+RDEPENDS:${PN}:append:qcm6490 += " \
+display-hal-linux \
+"

@@ -20,7 +20,7 @@ SRC_URI:append = " file://pkgconfig/gbm.pc"
 
 inherit autotools-brokensep pkgconfig
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+PACKAGE_ARCH = "${SOC_ARCH}"
 
 PREBUILT = "1"
 

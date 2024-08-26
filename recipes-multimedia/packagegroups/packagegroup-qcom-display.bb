@@ -15,7 +15,7 @@ RDEPENDS:${PN} = " \
     "
 
 RDEPENDS:${PN}:append:qcm6490 += " \
-    display-hal-linux \
+    qcom-display-hal-linux \
     kernel-module-displaydlkm \
     qcom-displaydevicetree \
 "

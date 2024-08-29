@@ -1,8 +1,11 @@
 RDEPENDS:${PN}:append = " \
     libdrm \
     libdrm-tests \
-    gbm \
     wayland \
     wayland-protocols \
     weston \
+    "
+
+RDEPENDS:${PN}:append:qcom-custom-bsp = "\
+    gbm \
     "

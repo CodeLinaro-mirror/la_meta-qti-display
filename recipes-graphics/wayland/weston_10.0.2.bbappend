@@ -1,20 +1,20 @@
 LICENSE_FLAGS = ""
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
-                    file://libweston/compositor.c;endline=27;md5=b22751d2c88735d2dcb492b1c5a47242 \
-                    "
+LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/weston-launch:"
 FILESPATH =+ "${WORKSPACE}:"
 
 SRC_URI:append:qcom = "   file://weston.png \
-                          file://weston.desktop \
-                          file://xwayland.weston-start \
-                          file://systemd-notify.weston-start \
-                          file://0001-weston-Add-stack-protector-flag.patch \
-                          file://0001-weston-enable-gbm-buffer-backend-protocol.patch"
+              file://weston.desktop \
+              file://xwayland.weston-start \
+              file://systemd-notify.weston-start"
 
-SRC_URI:append:qcm6490 = "  file://weston.ini \
+SRC_URI:append:qcom-custom-bsp = "   \
+              file://0001-weston-Add-stack-protector-flag.patch \
+              file://0001-weston-enable-gbm-buffer-backend-protocol.patch"
+
+SRC_URI:append:qcm6490:qcom-custom-bsp = "  file://weston.ini \
                             file://0001-Add-sdm-backend.patch \
                             file://0001-weston-export-shared-headers.patch \
                             file://0001-weston-add-protocol-extension-for-power-and-brightne.patch \
@@ -57,7 +57,7 @@ PACKAGECONFIG[sdm] = "-Dbackend-sdm=true,-Dbackend-sdm=false"
 # Weston with disabling display power key
 PACKAGECONFIG[disablepowerkey] = "-Ddisable-power-key=true,-Ddisable-power-key=false"
 
-LDFLAGS:append:qcm6490  += "-ldrmutils -ldisplaydebug -lglib-2.0 -ldmabufheap"
+LDFLAGS:append:qcm6490  = " -ldrmutils -ldisplaydebug -lglib-2.0 -ldmabufheap"
 
 #meson script's CPP flags
 CXXFLAGS:append:qcm6490  += "-I${STAGING_INCDIR}/sdm"

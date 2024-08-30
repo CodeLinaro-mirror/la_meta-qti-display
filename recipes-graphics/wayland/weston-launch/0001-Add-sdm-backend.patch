@@ -36,14 +36,14 @@ Signed-off-by: Devanshi Bansal <quic_devanshi@quicinc.com>
  .../sdm-service/sdm_display_socket_handler.h  |   46 +
  libweston/backend-sdm/sdm-service/uevent.c    |  135 ++
  libweston/backend-sdm/sdm-service/uevent.h    |   40 +
- libweston/backend-sdm/sdm.c                   | 1894 +++++++++++++++++
+ libweston/backend-sdm/sdm.c                   | 1888 +++++++++++++++++
  libweston/backend-sdm/state-propose.c         |  174 ++
  libweston/compositor.c                        |    1 +
  libweston/launcher-direct.c                   |   25 +-
  libweston/meson.build                         |   12 +-
  meson.build                                   |   16 +-
  meson_options.txt                             |   13 +-
- 33 files changed, 9151 insertions(+), 13 deletions(-)
+ 33 files changed, 9145 insertions(+), 13 deletions(-)
  create mode 100644 libweston/backend-sdm/fb.c
  create mode 100644 libweston/backend-sdm/kms.c
  create mode 100644 libweston/backend-sdm/meson.build
@@ -7281,7 +7281,7 @@ new file mode 100644
 index 00000000..ea184e7b
 --- /dev/null
 +++ b/libweston/backend-sdm/sdm.c
-@@ -0,0 +1,1894 @@
+@@ -0,0 +1,1888 @@
 +/*
 + * Copyright © 2008-2011 Kristian Høgsberg
 + * Copyright © 2011 Intel Corporation
@@ -8199,12 +8199,6 @@ index 00000000..ea184e7b
 +{
 +	struct drm_output *output = to_drm_output(base);
 +	struct drm_backend *b = to_drm_backend(base->compositor);
-+
-+	if (output->page_flip_pending || output->atomic_complete_pending) {
-+		output->destroy_pending = true;
-+		weston_log("destroy output while page flip pending\n");
-+		return;
-+	}
 +
 +	if (output->base.enabled)
 +		drm_output_deinit(&output->base);

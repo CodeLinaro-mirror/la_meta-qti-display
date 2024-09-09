@@ -11,11 +11,11 @@ PROVIDES = "${PACKAGES}"
 PACKAGES = "${PN}"
 
 RDEPENDS:${PN} = " \
-    kernel-module-displaydlkm \
-    displaydevicetree \
     libcec \
     "
 
 RDEPENDS:${PN}:append:qcm6490 += " \
-display-hal-linux \
+    display-hal-linux \
+    kernel-module-displaydlkm \
+    qcom-displaydevicetree \
 "

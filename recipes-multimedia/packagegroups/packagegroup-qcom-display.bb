@@ -14,7 +14,7 @@ RDEPENDS:${PN} = " \
     libcec \
     "
 
-RDEPENDS:${PN}:append:qcm6490 += " \
+RDEPENDS:${PN}:append:qcm6490:qcom-custom-bsp = " \
     qcom-display-hal-linux \
     kernel-module-displaydlkm \
     qcom-displaydevicetree \

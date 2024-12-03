@@ -28,6 +28,7 @@ PARALLEL_MAKE = ""
 # Disable parallel make
 PARALLEL_MAKE = "-j1"
 
+LD_PATH = "${@oe.utils.conditional('KERNEL_TOOLS_USES_MUSLC', 'True', "${LD_PATH_MUSLC}", "${LD_PATH_GLIBC}", d)}"
 do_compile[lockfiles] = "${TMPDIR}/build_modules.lock"
 
 do_configure() {
@@ -40,33 +41,38 @@ do_compile() {
 
     BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
     EXT_MODULES=../../display/vendor/qcom/opensource/display-drivers \
+    ENABLE_DDK_BUILD=${DDK_BUILD} \
+    TARGET_BOARD_PLATFORM=${TARGET_BOARD_PLATFORM} \
+    VARIANT=${KERNEL_DEFCONFIG_VARIANT} \
     ROOTDIR=${WORKSPACE}/ \
     MODULE_DRM_MSM=m \
     MODULE_OUT=${WORKDIR}/display/vendor/qcom/opensource/display-drivers \
     KERNEL_KIT=${KERNEL_OUT_PATH}/ \
     OUT_DIR=temp_out_dir \
     KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR} \
-    INSTALL_MODULE_HEADERS=1 \
     ./build/build_module.sh
+}
+
+do_strip_and_sign_modules() {
+    install -m 0755 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm_drm.ko -D ${WORKDIR}/msm_drm.ko
+     # strip debug symbols and sign the module
+    ${STAGING_DIR_NATIVE}/usr/libexec/aarch64-oe-linux/gcc/aarch64-oe-linux/${KP_STRIP_VERSION}/strip \
+        --strip-debug ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm_drm.ko
+    LD_LIBRARY_PATH=${LD_PATH} ${KERNEL_PREBUILT_PATH}/dist/sign-file sha1 ${KERNEL_PREBUILT_PATH}/dist/signing_key.pem \
+        ${KERNEL_PREBUILT_PATH}/dist/signing_key.x509 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm_drm.ko
 }
 
 do_install() {
 	install -d ${D}${sysconfdir}/initscripts
-	install -d ${D}/usr/include/
+	install -d ${D}/usr/include/display/
 	install -m 755 ${WORKDIR}/start_display_le ${D}${sysconfdir}/initscripts
-	install -d ${D}/usr/lib/modules/
-	install -m 0755 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm/msm_drm.ko -D ${WORKDIR}/msm_drm.ko
+	install -d ${D}${libdir}/modules/
 
-        # strip debug symbols and sign the module
-        ${STAGING_DIR_NATIVE}/usr/libexec/aarch64-oe-linux/gcc/aarch64-oe-linux/11.4.0/strip \
-              --strip-debug ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm/msm_drm.ko
+      cp -rp ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm_drm.ko ${D}${libdir}/modules/msm_drm.ko
+      chown 0:0 ${D}${libdir}/modules/msm_drm.ko
 
-        LD_LIBRARY_PATH=${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/prebuilts/kernel-build-tools/linux-x86/lib64/ \
-        ${KERNEL_PREBUILT_PATH}/dist/sign-file sha1 ${KERNEL_PREBUILT_PATH}/dist/signing_key.pem \
-        ${KERNEL_PREBUILT_PATH}/dist/signing_key.x509 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm/msm_drm.ko
-
-	install -m 0755 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm/msm_drm.ko -D ${D}${libdir}/modules/msm_drm.ko
-	cp -r ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/usr/include/display ${D}/usr/include/
+      # Workaround for install_headers issue.
+	cp -r ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/include/uapi/display/* ${D}/usr/include/display/
 	install -m 0644 ${WORKDIR}/display@.service -D ${D}${systemd_unitdir}/system/display@.service
 	install -m 0644 ${WORKDIR}/display.service -D ${D}${systemd_unitdir}/system/display.service
 	install -m 0755 ${WORKDIR}/display_load.conf -D ${D}${sysconfdir}/modules-load.d/display_load.conf
@@ -78,8 +84,14 @@ do_deploy() {
 
 addtask do_deploy after do_install
 
+python () {
+    bb.build.addtask('do_strip_and_sign_modules', 'do_install', 'do_compile', d)
+}
+
 FILES:${PN} += "${sysconfdir}/*"
 FILES:${PN} += "/etc/initscripts/start_display_le"
 FILES:${PN} += "${systemd_unitdir}/system/display@.service"
 FILES:${PN} += "${systemd_unitdir}/system/display.service"
 FILES:${PN} += "${libdir}/modules/*"
+
+RM_WORK_EXCLUDE += "${PN}"

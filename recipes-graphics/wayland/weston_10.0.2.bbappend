@@ -64,8 +64,8 @@ PACKAGECONFIG[disablepowerkey] = "-Ddisable-power-key=true,-Ddisable-power-key=f
 LDFLAGS:append:qcm6490  = " -ldrmutils -ldisplaydebug -lglib-2.0 -ldmabufheap"
 
 #meson script's CPP flags
-CXXFLAGS:append:qcm6490  += "-I${STAGING_INCDIR}/sdm"
-CXXFLAGS:append:qcm6490  += "-I${STAGING_INCDIR}/display/display"
+CXXFLAGS:append:qcm6490  = " -I${STAGING_INCDIR}/sdm"
+CXXFLAGS:append:qcm6490  = " -I${STAGING_INCDIR}/display/display"
 
 do_install:append:qcm6490() {
     install -m 0644 ${WORKDIR}/weston.ini -D ${D}${sysconfdir}/xdg/weston/weston.ini

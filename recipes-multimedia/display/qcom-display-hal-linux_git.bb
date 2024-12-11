@@ -32,7 +32,7 @@ DEPENDS += "libdrm \
             linux-kernel-qcom-headers \
             "
 
-DEPENDS:append:qcm6490 += "qcom-displaydlkm"
+DEPENDS:append:qcm6490 = "qcom-displaydlkm"
 
 QDCM_JSON = "qdcm_calib_data_nt36672e_lcd_video_mode_dsi_novatek_panel_with_DSC.json"
 

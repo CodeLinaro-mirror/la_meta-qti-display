@@ -36,6 +36,10 @@ DEPENDS:append:qcm6490 += "qcom-displaydlkm"
 
 QDCM_JSON = "qdcm_calib_data_nt36672e_lcd_video_mode_dsi_novatek_panel_with_DSC.json"
 
+do_compile:prepend () {
+    export LD_LIBRARY_PATH="${STAGING_DIR_NATIVE}/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
+}
+
 # Install path for qdcm calib files and lib config files
 do_install:append() {
   install -d ${D}/usr/data/display

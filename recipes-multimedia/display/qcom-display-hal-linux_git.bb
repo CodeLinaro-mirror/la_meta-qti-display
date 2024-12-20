@@ -28,7 +28,7 @@ PACKAGECONFIG[drm] = "--enable-sdmhaldrm, --disable-sdmhaldrm, libdrm, libdrm"
 
 DEPENDS += " grpc grpc-native protobuf protobuf-native "
 DEPENDS += "libdrm \
-            gbm \
+            virtual/libgbm \
             linux-kernel-qcom-headers \
             "
 

@@ -42,7 +42,7 @@ PACKAGE_ARCH ?= "${MACHINE_ARCH}"
 
 # The headers for GBM are contained in a completely separate package. Force
 # that subsidiary package to be installed anytime that gbm-dev is.
-RPROVIDES:${PN} += "libgbm"
+RPROVIDES:${PN} += "virtual/libgbm"
 
 do_install:append(){
     install -d ${D}${libdir}/

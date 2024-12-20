@@ -1,3 +1,6 @@
+LICENSE_FLAGS = ""
+LICENSE = "MIT"
+
 FILESEXTRAPATHS:prepend := "${THISDIR}/weston-launch:"
 FILESPATH =+ "${WORKSPACE}:"
 

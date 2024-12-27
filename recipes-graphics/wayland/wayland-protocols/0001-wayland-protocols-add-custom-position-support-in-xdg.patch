@@ -9,6 +9,8 @@ window positioning by the clients
 
 Upstream-Status: Inappropriate [Downstream]
 Signed-off-by: Kai Xing <kxing@codeaurora.org>
+
+Upstream-Status: Inappropriate [Downstream]
 ---
  stable/xdg-shell/xdg-shell.xml | 14 ++++++++++++++
  1 file changed, 14 insertions(+)

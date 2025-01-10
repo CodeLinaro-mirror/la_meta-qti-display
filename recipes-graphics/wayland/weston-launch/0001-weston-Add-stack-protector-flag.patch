@@ -9,6 +9,8 @@ Subject: [PATCH] weston: Add stack protector flag
 
 Change-Id: If82bae613563893d686c437f42322bac2e6ab48a
 Signed-off-by: Devanshi Bansal <quic_devanshi@quicinc.com>
+
+Upstream-Status: Inappropriate [Downstream]
 ---
  clients/meson.build    | 3 ++-
  compositor/meson.build | 3 ++-

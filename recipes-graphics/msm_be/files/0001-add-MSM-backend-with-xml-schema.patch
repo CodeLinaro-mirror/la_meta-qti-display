@@ -1,10 +1,10 @@
 This patch file is from Qualcomm Innovation Center, Inc. and is provided under the following license:
-Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
 SPDX-License-Identifier: BSD-3-Clause-Clear
 
-From c738a524399ba07001f8f51f5ab3bd462e28c40f Mon Sep 17 00:00:00 2001
+From f8a30e475191c4eb6ae18aa557dfc715e76c94bc Mon Sep 17 00:00:00 2001
 From: Devanshi Bansal <quic_devanshi@quicinc.com>
-Date: Fri, 20 Dec 2024 09:04:16 +0530
+Date: Sun, 19 Jan 2025 16:53:11 +0530
 Subject: [PATCH] add MSM backend with xml schema
 
 Upstream-Status: Inappropriate [Downstream]
@@ -13,19 +13,18 @@ Signed-off-by: Devanshi Bansal <quic_devanshi@quicinc.com>
 ---
  src/gbm/backends/msm/buffer_alloc.c           |  105 +
  src/gbm/backends/msm/buffer_alloc.h           |   13 +
- src/gbm/backends/msm/buffer_layout.c          |  182 ++
- src/gbm/backends/msm/buffer_layout.h          |   19 +
+ src/gbm/backends/msm/buffer_layout.c          |  207 ++
+ src/gbm/backends/msm/buffer_layout.h          |   20 +
  .../backends/msm/default_fmt_alignment.xml    | 1736 +++++++++++++++++
- src/gbm/backends/msm/gbm_msm.c                |  745 +++++++
+ src/gbm/backends/msm/gbm_msm.c                |  744 +++++++
  src/gbm/backends/msm/gbm_msm.h                |   43 +
  src/gbm/backends/msm/gbm_msm_int.h            |   36 +
  src/gbm/backends/msm/schema_parser.c          |  176 ++
  src/gbm/backends/msm/schema_parser.h          |   51 +
- src/gbm/meson.build                           |   38 +-
- src/meson.build                               |    1 +
- src/test/gbmtest.c                            |  503 +++++
- src/test/meson.build                          |   29 +
- 14 files changed, 3676 insertions(+), 1 deletion(-)
+ src/gbm/meson.build                           |   32 +
+ src/test/gbmtest.c                            |  502 +++++
+ src/test/meson.build                          |   28 +
+ 13 files changed, 3693 insertions(+)
  create mode 100644 src/gbm/backends/msm/buffer_alloc.c
  create mode 100644 src/gbm/backends/msm/buffer_alloc.h
  create mode 100644 src/gbm/backends/msm/buffer_layout.c
@@ -171,10 +170,10 @@ index 0000000..cbd7ddd
 +int bo_offset(int fd, uint32_t handle, uint64_t *offset);
 diff --git a/src/gbm/backends/msm/buffer_layout.c b/src/gbm/backends/msm/buffer_layout.c
 new file mode 100644
-index 0000000..0c2af12
+index 0000000..a38b168
 --- /dev/null
 +++ b/src/gbm/backends/msm/buffer_layout.c
-@@ -0,0 +1,182 @@
+@@ -0,0 +1,207 @@
 +/*
 + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
 + * SPDX-License-Identifier: BSD-3-Clause-Clear
@@ -209,11 +208,33 @@ index 0000000..0c2af12
 +   return false;
 +}
 +
++uint32_t get_plane_height(uint32_t buffer_height, uint32_t format, int plane) {
++   uint32_t plane_height = buffer_height;
++
++   if (plane == 0)
++      return plane_height;
++
++   switch(format) {
++   case GBM_FORMAT_NV12:
++   case GBM_FORMAT_NV21:
++   case GBM_FORMAT_NV16:
++   case GBM_FORMAT_NV61:
++      plane_height = (plane_height+1)>>1;
++      break;
++   default:
++      break;
++   }
++
++   return plane_height;
++}
++
 +int get_aligned_width_and_height(struct gbm_bufdesc *descriptor, int plane,
 +                                 uint32_t *alignedw, uint32_t *alignedh)
 +{
 +   if (!descriptor || !alignedw || !alignedh)
 +      return -1;
++
++   uint32_t height = get_plane_height(descriptor->height, descriptor->format, plane);
 +
 +   const char *format_name = find_format_name(descriptor->format);
 +   struct format_info *info = get_format_info(format_name);
@@ -229,7 +250,7 @@ index 0000000..0c2af12
 +   }
 +
 +   *alignedw = ALIGN(descriptor->width, pitch_align_factor);
-+   *alignedh = ALIGN(descriptor->height, height_align_factor);
++   *alignedh = ALIGN(height, height_align_factor);
 +
 +   return 0;
 +}
@@ -245,6 +266,7 @@ index 0000000..0c2af12
 +      return -1;
 +
 +   uint32_t alignedw = 0, alignedh = 0;
++
 +   if (get_aligned_width_and_height(descriptor, plane, &alignedw, &alignedh) != 0)
 +      return -1;
 +
@@ -286,6 +308,8 @@ index 0000000..0c2af12
 +   if (!descriptor || !metabuffer_size)
 +      return -1;
 +
++   uint32_t height = get_plane_height(descriptor->height, descriptor->format, plane);
++
 +   const char *format_name = find_format_name(descriptor->format);
 +   struct format_info *info = get_format_info(format_name);
 +   if (!info)
@@ -299,7 +323,7 @@ index 0000000..0c2af12
 +   uint32_t block_width = info->planes[plane].meta_info->block_width;
 +   uint32_t block_height = info->planes[plane].meta_info->block_height;
 +
-+   int meta_height = ALIGN(((descriptor->height + block_height - 1) / block_height), 16);
++   int meta_height = ALIGN(((height + block_height - 1) / block_height), 16);
 +   int meta_width = ALIGN(((descriptor->width + block_width - 1) / block_width), 64);
 +   *metabuffer_size = (unsigned int)ALIGN((meta_width * meta_height), 4096);
 +
@@ -340,11 +364,11 @@ index 0000000..0c2af12
 +
 +   const char *format_name = find_format_name(descriptor->format);
 +   struct format_info *info = get_format_info(format_name);
-+   if (!info)
++   if (!info || (plane > info->plane_count - 1))
 +      return -1;
 +
 +   uint32_t offset = 0;
-+   for (uint32_t i = 0; i < info->plane_count-1; i++) {
++   for (uint32_t i = 0; i < plane; i++) {
 +      uint32_t data_size = 0, ubwc_size = 0;
 +      if (get_data_plane_size(descriptor, i, &data_size) != 0)
 +         return -1;
@@ -359,10 +383,10 @@ index 0000000..0c2af12
 +}
 diff --git a/src/gbm/backends/msm/buffer_layout.h b/src/gbm/backends/msm/buffer_layout.h
 new file mode 100644
-index 0000000..a99a050
+index 0000000..cb23e71
 --- /dev/null
 +++ b/src/gbm/backends/msm/buffer_layout.h
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,20 @@
 +/*
 + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
 + * SPDX-License-Identifier: BSD-3-Clause-Clear
@@ -382,6 +406,7 @@ index 0000000..a99a050
 +int get_size(struct gbm_bufdesc *descriptor, uint32_t *buffer_size);
 +int get_plane_offset(struct gbm_bufdesc *descriptor, int plane, 
 +                     uint32_t *plane_offset);
++uint32_t get_plane_height(uint32_t buffer_height, uint32_t format, int plane);
 diff --git a/src/gbm/backends/msm/default_fmt_alignment.xml b/src/gbm/backends/msm/default_fmt_alignment.xml
 new file mode 100644
 index 0000000..ed8ff7a
@@ -2126,7 +2151,7 @@ index 0000000..ed8ff7a
 +</formats>
 diff --git a/src/gbm/backends/msm/gbm_msm.c b/src/gbm/backends/msm/gbm_msm.c
 new file mode 100644
-index 0000000..b1d60be
+index 0000000..eb509ee
 --- /dev/null
 +++ b/src/gbm/backends/msm/gbm_msm.c
 @@ -0,0 +1,744 @@
@@ -2967,7 +2992,7 @@ index 0000000..357c713
 +#endif
 diff --git a/src/gbm/backends/msm/schema_parser.c b/src/gbm/backends/msm/schema_parser.c
 new file mode 100644
-index 0000000..3283bdb
+index 0000000..24e5dc3
 --- /dev/null
 +++ b/src/gbm/backends/msm/schema_parser.c
 @@ -0,0 +1,176 @@
@@ -3205,30 +3230,10 @@ index 0000000..a507b4a
 +#endif // SCHEMA_PARSER_H
 +
 diff --git a/src/gbm/meson.build b/src/gbm/meson.build
-index df65361..68e8285 100644
+index df65361..091a99b 100644
 --- a/src/gbm/meson.build
 +++ b/src/gbm/meson.build
-@@ -37,16 +37,18 @@ incs_gbm = [
- ]
- 
- if with_dri2
-+  message('QIPL with_dri2')
-   files_gbm += files('backends/dri/gbm_dri.c', 'backends/dri/gbm_driint.h')
-   deps_gbm += dep_libdrm # TODO: pthread-stubs
- endif
- if with_platform_wayland
-+  message('QIPL with_platform_wayland')
-   deps_gbm += dep_wayland_server
-   incs_gbm += inc_wayland_drm
- endif
- 
- libgbm_name = 'gbm'
--
-+message('QIPL outside')
- if with_platform_android and get_option('platform-sdk-version') >= 30
-   libgbm_name = 'gbm_mesa'
- endif
-@@ -64,6 +66,38 @@ libgbm = shared_library(
+@@ -64,6 +64,37 @@ libgbm = shared_library(
    install : true,
  )
  
@@ -3260,41 +3265,20 @@ index df65361..68e8285 100644
 +    install_dir: '/usr/lib/gbm',
 +    name_prefix: ''
 +  )
-+  message('QIPL standalone_gbm')
 +  install_data('backends/msm/default_fmt_alignment.xml', install_dir: '/usr/lib/gbm')
 +endif
 +
  if with_tests
    abi_check = executable('gbm_abi_check', 'main/gbm_abi_check.c')
    test('gbm-abi-check', abi_check, suite : ['gbm'])
-@@ -71,6 +105,7 @@ endif
- 
- install_headers('main/gbm.h')
- 
-+message('QIPL gbm pkggenerate')
- pkg.generate(
-   name : 'gbm',
-   filebase : 'gbm',
-@@ -93,3 +128,4 @@ if with_symbols_check
+@@ -93,3 +124,4 @@ if with_symbols_check
      suite : ['gbm'],
    )
  endif
 +
-diff --git a/src/meson.build b/src/meson.build
-index 1293538..89b2d4f 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -120,6 +120,7 @@ if with_gallium or with_gbm
- endif
- if with_gbm
-   subdir('gbm')
-+#  subdir('test')
- else
-   inc_gbm = []
- endif
 diff --git a/src/test/gbmtest.c b/src/test/gbmtest.c
 new file mode 100644
-index 0000000..efd4593
+index 0000000..04fe382
 --- /dev/null
 +++ b/src/test/gbmtest.c
 @@ -0,0 +1,502 @@
@@ -3802,7 +3786,7 @@ index 0000000..efd4593
 +
 diff --git a/src/test/meson.build b/src/test/meson.build
 new file mode 100644
-index 0000000..7a813e4
+index 0000000..bb8864c
 --- /dev/null
 +++ b/src/test/meson.build
 @@ -0,0 +1,28 @@

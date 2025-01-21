@@ -4693,7 +4693,7 @@ new file mode 100644
 index 0000000..445af2b
 --- /dev/null
 +++ b/libweston/backend-sdm/sdm-service/sdm_display_buffer_allocator.cpp
-@@ -0,0 +1,342 @@
+@@ -0,0 +1,336 @@
 +/*
 +* Copyright (c) 2017, 2020-2021, The Linux Foundation. All rights reserved.
 +*
@@ -4974,12 +4974,6 @@ index 0000000..445af2b
 +int SdmDisplayBufferAllocator::GetBufferLayout(const AllocatedBufferInfo &buf_info,
 +                                                 uint32_t stride[4], uint32_t offset[4],
 +                                                 uint32_t *num_planes) {
-+    *num_planes =1;
-+    stride[0] = 4352;
-+    offset[0] = 0;
-+    return 0;
-+
-+    //TODO: check why msm-be is closing the buffer handle
 +    struct gbm_bo *bo;
 +    struct gbm_import_fd_data import_fd_data;
 +    uint32_t format1 = GBM_FORMAT_ARGB8888;
@@ -4989,7 +4983,7 @@ index 0000000..445af2b
 +
 +    SetBufferInfo(buf_info.format, &format1, &flags);
 +
-+    import_fd_data.fd = buf_info.fd;
++    import_fd_data.fd = ::dup(buf_info.fd);
 +    import_fd_data.format = format1;
 +    import_fd_data.width = buf_info.aligned_width;
 +    import_fd_data.height = buf_info.aligned_height;
@@ -7086,7 +7080,7 @@ new file mode 100644
 index 0000000..488d472
 --- /dev/null
 +++ b/libweston/backend-sdm/sdm.c
-@@ -0,0 +1,1881 @@
+@@ -0,0 +1,1877 @@
 +/*
 + * Copyright © 2008-2011 Kristian Høgsberg
 + * Copyright © 2011 Intel Corporation
@@ -8143,10 +8137,6 @@ index 0000000..488d472
 +
 +	weston_head_set_connection_status(&head->base, true);
 +
-+	/* Disable HDCP for now */
-+//	weston_head_set_content_protection_status(&head->base,
-+//							 WESTON_HDCP_DISABLE);
-+//	weston_head_set_internal(&head->base);
 +	weston_compositor_add_head(backend->compositor, &head->base);
 +
 +	drm_head_log_info(head, "found");
@@ -8887,8 +8877,8 @@ index 0000000..488d472
 +				   "support failed.\n");
 +	}
 +
-+//	if (weston_qti_extn_setup(compositor) < 0)
-+//		weston_log("Error: weston_qti_extn_setup failed\n");
++	if (weston_qti_extn_setup(compositor) < 0)
++		weston_log("Error: weston_qti_extn_setup failed\n");
 +	if (compositor->capabilities & WESTON_CAP_EXPLICIT_SYNC) {
 +		if (linux_explicit_synchronization_setup(compositor) < 0)
 +			weston_log("Error: initializing explicit "
@@ -9140,7 +9130,7 @@ index 0000000..d429946
 +			/* Set the view's plane back to NULL so that it is not composed by GPU */
 +			sdm_layer->pnode->plane = NULL;
 +		}
-+	} 
++	}
 +}
 diff --git a/libweston/compositor.c b/libweston/compositor.c
 index 41459eb..969a77e 100644

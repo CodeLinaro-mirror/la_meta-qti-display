@@ -2,9 +2,9 @@ This patch file is from Qualcomm Innovation Center, Inc. and is provided under t
 Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
 SPDX-License-Identifier: BSD-3-Clause-Clear
 
-From f8a30e475191c4eb6ae18aa557dfc715e76c94bc Mon Sep 17 00:00:00 2001
-From: Devanshi Bansal <quic_devanshi@quicinc.com>
-Date: Sun, 19 Jan 2025 16:53:11 +0530
+From 06d6a4dc7d55e3e259ec6ac3a67a0c882867e217 Mon Sep 17 00:00:00 2001
+From: Chintankumar Savaliya <quic_csavaliy@quicinc.com>
+Date: Thu, 30 Jan 2025 20:06:08 +0530
 Subject: [PATCH] add MSM backend with xml schema
 
 Upstream-Status: Inappropriate [Downstream]
@@ -21,10 +21,10 @@ Signed-off-by: Devanshi Bansal <quic_devanshi@quicinc.com>
  src/gbm/backends/msm/gbm_msm_int.h            |   36 +
  src/gbm/backends/msm/schema_parser.c          |  176 ++
  src/gbm/backends/msm/schema_parser.h          |   51 +
- src/gbm/meson.build                           |   32 +
+ src/gbm/meson.build                           |   34 +
  src/test/gbmtest.c                            |  502 +++++
  src/test/meson.build                          |   28 +
- 13 files changed, 3693 insertions(+)
+ 13 files changed, 3695 insertions(+)
  create mode 100644 src/gbm/backends/msm/buffer_alloc.c
  create mode 100644 src/gbm/backends/msm/buffer_alloc.h
  create mode 100644 src/gbm/backends/msm/buffer_layout.c
@@ -3230,10 +3230,10 @@ index 0000000..a507b4a
 +#endif // SCHEMA_PARSER_H
 +
 diff --git a/src/gbm/meson.build b/src/gbm/meson.build
-index df65361..091a99b 100644
+index df65361..f47d7e9 100644
 --- a/src/gbm/meson.build
 +++ b/src/gbm/meson.build
-@@ -64,6 +64,37 @@ libgbm = shared_library(
+@@ -64,6 +64,39 @@ libgbm = shared_library(
    install : true,
  )
  
@@ -3261,6 +3261,8 @@ index df65361..091a99b 100644
 +    link_args : [ld_args_gc_sections],
 +    dependencies : [deps_gbm, dep_dl, dep_thread, dep_libxml2],
 +    gnu_symbol_visibility : 'hidden',
++    version : '1.0.0',
++    soversion : '1',
 +    install : true,
 +    install_dir: '/usr/lib/gbm',
 +    name_prefix: ''
@@ -3271,7 +3273,7 @@ index df65361..091a99b 100644
  if with_tests
    abi_check = executable('gbm_abi_check', 'main/gbm_abi_check.c')
    test('gbm-abi-check', abi_check, suite : ['gbm'])
-@@ -93,3 +124,4 @@ if with_symbols_check
+@@ -93,3 +126,4 @@ if with_symbols_check
      suite : ['gbm'],
    )
  endif

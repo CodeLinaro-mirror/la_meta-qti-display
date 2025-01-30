@@ -336,7 +336,7 @@ FILES:libosmesa = "${libdir}/libOSMesa.so.*"
 FILES:libxatracker = "${libdir}/libxatracker.so.*"
 FILES:${PN} = "${libdir}/libgbm.so.* \
                ${libdir}/gbm/default_fmt_alignment.xml \
-               ${libdir}/gbm/msm_gbm.so \"
+               ${libdir}/gbm/msm_gbm.so* \"
 
 
 FILES:${PN}-dev = "${libdir}/pkgconfig/dri.pc ${includedir}/vulkan ${libdir}/vdpau/*.so"
@@ -356,6 +356,7 @@ FILES:libxatracker-dev = "${libdir}/libxatracker.so ${libdir}/libxatracker.la \
 # catch all to get all the tools and data
 FILES:${PN}-tools = "${bindir} ${datadir}"
 ALLOW_EMPTY:${PN}-tools = "1"
+INSANE_SKIP:${PN} = "dev-so"
 
 # Fix upgrade path from mesa to mesa-megadriver
 RREPLACES:mesa-megadriver = "mesa"

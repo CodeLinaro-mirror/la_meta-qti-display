@@ -1,30 +1,23 @@
-This patch file is from Qualcomm Innovation Center, Inc. and is provided under the following license:
-Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
-SPDX-License-Identifier: BSD-3-Clause-Clear
-
-From 06d6a4dc7d55e3e259ec6ac3a67a0c882867e217 Mon Sep 17 00:00:00 2001
-From: Chintankumar Savaliya <quic_csavaliy@quicinc.com>
-Date: Thu, 30 Jan 2025 20:06:08 +0530
+From 14e8f2d67c0c1f2da7e6f6f483bab8522d210ae5 Mon Sep 17 00:00:00 2001
+From: Devanshi Bansal <devanshi@qti.qualcomm.com>
+Date: Wed, 5 Feb 2025 07:23:51 +0530
 Subject: [PATCH] add MSM backend with xml schema
 
-Upstream-Status: Inappropriate [Downstream]
-
-Signed-off-by: Devanshi Bansal <quic_devanshi@quicinc.com>
 ---
- src/gbm/backends/msm/buffer_alloc.c           |  105 +
+ src/gbm/backends/msm/buffer_alloc.c           |  105 ++
  src/gbm/backends/msm/buffer_alloc.h           |   13 +
- src/gbm/backends/msm/buffer_layout.c          |  207 ++
+ src/gbm/backends/msm/buffer_layout.c          |  242 ++++
  src/gbm/backends/msm/buffer_layout.h          |   20 +
- .../backends/msm/default_fmt_alignment.xml    | 1736 +++++++++++++++++
- src/gbm/backends/msm/gbm_msm.c                |  744 +++++++
+ .../backends/msm/default_fmt_alignment.xml    | 1197 +++++++++++++++++
+ src/gbm/backends/msm/gbm_msm.c                |  744 ++++++++++
  src/gbm/backends/msm/gbm_msm.h                |   43 +
  src/gbm/backends/msm/gbm_msm_int.h            |   36 +
- src/gbm/backends/msm/schema_parser.c          |  176 ++
+ src/gbm/backends/msm/schema_parser.c          |  221 +++
  src/gbm/backends/msm/schema_parser.h          |   51 +
  src/gbm/meson.build                           |   34 +
- src/test/gbmtest.c                            |  502 +++++
+ src/test/gbmtest.c                            |  502 +++++++
  src/test/meson.build                          |   28 +
- 13 files changed, 3695 insertions(+)
+ 13 files changed, 3236 insertions(+)
  create mode 100644 src/gbm/backends/msm/buffer_alloc.c
  create mode 100644 src/gbm/backends/msm/buffer_alloc.h
  create mode 100644 src/gbm/backends/msm/buffer_layout.c
@@ -170,10 +163,10 @@ index 0000000..cbd7ddd
 +int bo_offset(int fd, uint32_t handle, uint64_t *offset);
 diff --git a/src/gbm/backends/msm/buffer_layout.c b/src/gbm/backends/msm/buffer_layout.c
 new file mode 100644
-index 0000000..a38b168
+index 0000000..119300c
 --- /dev/null
 +++ b/src/gbm/backends/msm/buffer_layout.c
-@@ -0,0 +1,207 @@
+@@ -0,0 +1,242 @@
 +/*
 + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
 + * SPDX-License-Identifier: BSD-3-Clause-Clear
@@ -189,7 +182,12 @@ index 0000000..a38b168
 +int get_num_planes(struct gbm_bufdesc *descriptor, uint32_t *num_planes) {
 +   if (!descriptor)
 +      return false;
++
 +   const char *format_name = find_format_name(descriptor->format);
++   if (!format_name) {
++      fprintf(stderr,"Unsupported format\n");
++      return -1;
++   }
 +   struct format_info *info = get_format_info(format_name);
 +   if (!info)
 +      return -1;
@@ -237,6 +235,11 @@ index 0000000..a38b168
 +   uint32_t height = get_plane_height(descriptor->height, descriptor->format, plane);
 +
 +   const char *format_name = find_format_name(descriptor->format);
++   if (!format_name) {
++      fprintf(stderr,"Unsupported format\n");
++      return -1;
++   }
++
 +   struct format_info *info = get_format_info(format_name);
 +   if (!info)
 +      return -1;
@@ -261,6 +264,11 @@ index 0000000..a38b168
 +      return -1;
 +
 +   const char *format_name = find_format_name(descriptor->format);
++   if (!format_name) {
++      fprintf(stderr,"Unsupported format\n");
++      return -1;
++   }
++
 +   struct format_info *info = get_format_info(format_name);
 +   if (!info)
 +      return -1;
@@ -285,6 +293,11 @@ index 0000000..a38b168
 +   *plane_size = 0;
 +
 +   const char *format_name = find_format_name(descriptor->format);
++   if (!format_name) {
++      fprintf(stderr,"Unsupported format\n");
++      return -1;
++   }
++
 +   struct format_info *info = get_format_info(format_name);
 +   if (!info)
 +      return -1;
@@ -311,6 +324,11 @@ index 0000000..a38b168
 +   uint32_t height = get_plane_height(descriptor->height, descriptor->format, plane);
 +
 +   const char *format_name = find_format_name(descriptor->format);
++   if (!format_name) {
++      fprintf(stderr,"Unsupported format\n");
++      return -1;
++   }
++
 +   struct format_info *info = get_format_info(format_name);
 +   if (!info)
 +      return -1;
@@ -336,6 +354,11 @@ index 0000000..a38b168
 +      return -1;
 +
 +   const char *format_name = find_format_name(descriptor->format);
++   if (!format_name) {
++      fprintf(stderr,"Unsupported format\n");
++      return -1;
++   }
++
 +   struct format_info *info = get_format_info(format_name);
 +   if (!info)
 +      return -1;
@@ -363,6 +386,11 @@ index 0000000..a38b168
 +      return -1;
 +
 +   const char *format_name = find_format_name(descriptor->format);
++   if (!format_name) {
++      fprintf(stderr,"Unsupported format\n");
++      return -1;
++   }
++
 +   struct format_info *info = get_format_info(format_name);
 +   if (!info || (plane > info->plane_count - 1))
 +      return -1;
@@ -409,10 +437,10 @@ index 0000000..cb23e71
 +uint32_t get_plane_height(uint32_t buffer_height, uint32_t format, int plane);
 diff --git a/src/gbm/backends/msm/default_fmt_alignment.xml b/src/gbm/backends/msm/default_fmt_alignment.xml
 new file mode 100644
-index 0000000..ed8ff7a
+index 0000000..8c57048
 --- /dev/null
 +++ b/src/gbm/backends/msm/default_fmt_alignment.xml
-@@ -0,0 +1,1736 @@
+@@ -0,0 +1,1197 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<formats>
 +   <format>
@@ -425,13 +453,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ARGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+	         <pitch_align>64</pitch_align>
-+	         <height_align>16</height_align>
-+	         <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -469,13 +490,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ARGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -535,13 +549,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGRA</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+	         <pitch_align>64</pitch_align>
-+	         <height_align>16</height_align>
-+	         <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -557,13 +564,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RGBX</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -579,13 +579,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGRX</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>16</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -601,13 +594,6 @@ index 0000000..ed8ff7a
 +           <plane_name>XRGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -622,13 +608,6 @@ index 0000000..ed8ff7a
 +           <plane_name>XBGR</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -644,13 +623,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RGBX</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+	         <pitch_align>128</pitch_align>
-+	         <height_align>16</height_align>
-+	         <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -666,13 +638,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGRX</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -688,13 +653,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ARGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -710,13 +668,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ABGR</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -732,13 +683,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RGBA</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -754,13 +698,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGRA</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+	         <pitch_align>128</pitch_align>
-+	         <height_align>16</height_align>
-+	         <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -776,13 +713,6 @@ index 0000000..ed8ff7a
 +           <plane_name>XRGB</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -798,13 +728,6 @@ index 0000000..ed8ff7a
 +           <plane_name>XBGR</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -820,13 +743,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RGBX</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -842,13 +758,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGRX</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -864,13 +773,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ARGB</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+	         <pitch_align>64</pitch_align>
-+	         <height_align>16</height_align>
-+	         <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -886,13 +788,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ABGR</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -908,13 +803,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RGBA</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -930,13 +818,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGRA</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -952,13 +833,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -975,13 +849,6 @@ index 0000000..ed8ff7a
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
 +         </plane>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +       </planes>
 +     </constraints>
 +   </format>
@@ -997,13 +864,6 @@ index 0000000..ed8ff7a
 +           <pitch_align>256</pitch_align>
 +           <height_align>1</height_align>
 +         </plane>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +       </planes>
 +     </constraints>
 +   </format>
@@ -1018,13 +878,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGR</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1040,13 +893,6 @@ index 0000000..ed8ff7a
 +           <plane_name>XRGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1062,13 +908,6 @@ index 0000000..ed8ff7a
 +           <plane_name>XBGR</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1084,13 +923,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RGBX</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+	         <pitch_align>64</pitch_align>
-+	         <height_align>16</height_align>
-+	         <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1106,13 +938,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGRX</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1128,13 +953,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ARGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1172,13 +990,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RGBA</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1194,13 +1005,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGRA</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+	         <pitch_align>64</pitch_align>
-+	         <height_align>16</height_align>
-+	         <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1216,13 +1020,6 @@ index 0000000..ed8ff7a
 +           <plane_name>XBGR</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1238,13 +1035,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ABGR</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1260,13 +1050,6 @@ index 0000000..ed8ff7a
 +           <plane_name>XBGR</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1282,13 +1065,6 @@ index 0000000..ed8ff7a
 +           <plane_name>ABGR</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1304,13 +1080,6 @@ index 0000000..ed8ff7a
 +           <plane_name>R</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>32</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1326,13 +1095,6 @@ index 0000000..ed8ff7a
 +           <plane_name>R</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>128</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1363,13 +1125,6 @@ index 0000000..ed8ff7a
 +           <plane_name>RG</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1415,13 +1170,6 @@ index 0000000..ed8ff7a
 +           <plane_name>BGR</plane_name>
 +           <pitch_align>32</pitch_align>
 +           <height_align>32</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1542,13 +1290,6 @@ index 0000000..ed8ff7a
 +           <plane_name>YVYU</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1586,13 +1327,6 @@ index 0000000..ed8ff7a
 +           <plane_name>VYUY</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1608,13 +1342,6 @@ index 0000000..ed8ff7a
 +           <plane_name>AYUV</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1630,25 +1357,11 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +		 <plane>
 +           <plane_name>UV</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1664,25 +1377,11 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>VU</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1698,37 +1397,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1744,37 +1422,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1790,37 +1447,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1836,37 +1472,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1882,37 +1497,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1928,37 +1522,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -1974,37 +1547,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -2020,37 +1572,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -2066,37 +1597,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -2112,37 +1622,16 @@ index 0000000..ed8ff7a
 +           <plane_name>Y</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>V</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +         <plane>
 +           <plane_name>U</plane_name>
 +           <pitch_align>256</pitch_align>
 +           <height_align>256</height_align>
-+           <meta_info>
-+             <block_width>16</block_width>
-+             <block_height>4</block_height>
-+             <pitch_align>64</pitch_align>
-+             <height_align>16</height_align>
-+             <size_align>4096</size_align>
-+           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -2992,10 +2481,10 @@ index 0000000..357c713
 +#endif
 diff --git a/src/gbm/backends/msm/schema_parser.c b/src/gbm/backends/msm/schema_parser.c
 new file mode 100644
-index 0000000..24e5dc3
+index 0000000..9f3d85c
 --- /dev/null
 +++ b/src/gbm/backends/msm/schema_parser.c
-@@ -0,0 +1,176 @@
+@@ -0,0 +1,221 @@
 +/*
 + * Copyright (c) 2024, 2024 Qualcomm Innovation Center, Inc. All rights reserved.
 + * SPDX-License-Identifier: BSD-3-Clause-Clear
@@ -3035,6 +2524,51 @@ index 0000000..24e5dc3
 +   {"BGRX_1010102", GBM_FORMAT_BGRX1010102},
 +   {"NV_12", GBM_FORMAT_NV12},
 +   {"NV_21", GBM_FORMAT_NV21},
++   {"XRGB_4444", GBM_FORMAT_XRGB4444},
++   {"XBGR_4444", GBM_FORMAT_XBGR4444},
++   {"RGBX_4444", GBM_FORMAT_RGBX4444},
++   {"BGRX_4444", GBM_FORMAT_BGRX4444},
++   {"ARGB_4444", GBM_FORMAT_ARGB4444},
++   {"ABGR_4444", GBM_FORMAT_ABGR4444},
++   {"RGBA_4444", GBM_FORMAT_RGBA4444},
++   {"BGRA_4444", GBM_FORMAT_BGRA4444},
++   {"XRGB_1555", GBM_FORMAT_XRGB1555},
++   {"XBGR_1555", GBM_FORMAT_XBGR1555},
++   {"RGBX_5551", GBM_FORMAT_RGBX5551},
++   {"BGRX_5551", GBM_FORMAT_BGRX5551},
++   {"ARGB_1555", GBM_FORMAT_ARGB1555},
++   {"ABGR_1555", GBM_FORMAT_ABGR1555},
++   {"RGBA_5551", GBM_FORMAT_RGBA5551},
++   {"BGRA_5551", GBM_FORMAT_BGRA5551},
++   {"XBGR_16161616", GBM_FORMAT_XBGR16161616},
++   {"ABGR_16161616", GBM_FORMAT_ABGR16161616},
++   {"XBGR_16161616F", GBM_FORMAT_XBGR16161616F},
++   {"ABGR_16161616F", GBM_FORMAT_ABGR16161616F},
++   {"R_8", GBM_FORMAT_R8},
++   {"R_16", GBM_FORMAT_R16},
++   {"GR_88", GBM_FORMAT_GR88},
++   {"RG_1616", GBM_FORMAT_RG1616},
++   {"GR_1616", GBM_FORMAT_GR1616},
++   {"RGB_332", GBM_FORMAT_RGB332},
++   {"BGR_233", GBM_FORMAT_BGR233},
++   {"C_8", GBM_FORMAT_C8},
++   {"YUYV", GBM_FORMAT_YUYV},
++   {"YVYU", GBM_FORMAT_YVYU},
++   {"UYVY", GBM_FORMAT_UYVY},
++   {"VYUY", GBM_FORMAT_VYUY},
++   {"AYUV", GBM_FORMAT_AYUV},
++   {"NV_16", GBM_FORMAT_NV16},
++   {"NV_61", GBM_FORMAT_NV61},
++   {"YUV_410", GBM_FORMAT_YUV410},
++   {"YVU_410", GBM_FORMAT_YVU410},
++   {"YUV_411", GBM_FORMAT_YUV411},
++   {"YVU_411", GBM_FORMAT_YVU411},
++   {"YUV_420", GBM_FORMAT_YUV420},
++   {"YVU_420", GBM_FORMAT_YVU420},
++   {"YUV_422", GBM_FORMAT_YUV422},
++   {"YVU_422", GBM_FORMAT_YVU422},
++   {"YUV_444", GBM_FORMAT_YUV444},
++   {"YVU_444", GBM_FORMAT_YVU444}
 +};
 +
 +const char* find_format_name(uint32_t format_enum)

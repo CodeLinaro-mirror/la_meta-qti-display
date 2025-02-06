@@ -4693,7 +4693,7 @@ new file mode 100644
 index 0000000..445af2b
 --- /dev/null
 +++ b/libweston/backend-sdm/sdm-service/sdm_display_buffer_allocator.cpp
-@@ -0,0 +1,336 @@
+@@ -0,0 +1,338 @@
 +/*
 +* Copyright (c) 2017, 2020-2021, The Linux Foundation. All rights reserved.
 +*
@@ -4992,6 +4992,8 @@ index 0000000..445af2b
 +    bo = gbm_bo_import(gbm_, GBM_BO_IMPORT_FD, &import_fd_data, flags);
 +
 +    if (bo == NULL) {
++        DLOGW("Failed to import buffer fd %d format 0x%x", import_fd_data.fd, format1);
++        close(import_fd_data.fd);
 +        return kErrorNone;
 +    }
 +
@@ -8963,7 +8965,7 @@ new file mode 100644
 index 0000000..d429946
 --- /dev/null
 +++ b/libweston/backend-sdm/state-propose.c
-@@ -0,0 +1,168 @@
+@@ -0,0 +1,169 @@
 +/*
 + * Copyright © 2008-2011 Kristian Høgsberg
 + * Copyright © 2011 Intel Corporation
@@ -9041,7 +9043,8 @@ index 0000000..d429946
 +
 +	pixman_region32_init(&layer->overlap);
 +	pixman_region32_copy(&layer->overlap, overlap);
-+	weston_buffer_reference(&layer->buffer_ref,
++       if (!(pnode->view->surface->buffer_ref.buffer && pnode->view->surface->buffer_ref.buffer->passive_count > 0))
++	    weston_buffer_reference(&layer->buffer_ref,
 +				pnode->view->surface->buffer_ref.buffer, BUFFER_MAY_BE_ACCESSED);
 +
 +	return layer;

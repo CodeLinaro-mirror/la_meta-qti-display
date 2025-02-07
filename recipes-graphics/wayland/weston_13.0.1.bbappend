@@ -34,8 +34,10 @@ SRC_URI:append:qcs8300 = "  file://0001-weston-add-sdm-option.patch \
 
 SRC_URI:append:qcs8300:qcom-custom-bsp = " file://0001-change-drm-pixel-format.patch"
 
-SRC_URI:append:qcs615  = "  file://0001-drm-backend-power-off-during-hotplug-disconnect.patch \
-                            file://0001-weston-add-sdm-option.patch"
+SRC_URI:append:qcs615  = "  file://0001-weston-add-sdm-option.patch \
+                            file://0001-weston-avoid-duplicate-format.patch \
+                            file://0001-drm-backend-power-off-during-hotplug-disconnect.patch \
+                            "
 
 SRC_URI:append:qcom-custom-bsp = " \
                         file://0001-gl-renderer-choose-correct-texture-target-for-multip.patch"

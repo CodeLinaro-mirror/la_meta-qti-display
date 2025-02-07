@@ -1,14 +1,14 @@
-From 14e8f2d67c0c1f2da7e6f6f483bab8522d210ae5 Mon Sep 17 00:00:00 2001
-From: Devanshi Bansal <devanshi@qti.qualcomm.com>
-Date: Wed, 5 Feb 2025 07:23:51 +0530
+From c5f741264d964360a57fab626e00619b8dfd08f8 Mon Sep 17 00:00:00 2001
+From: Devanshi Bansal <quic_devanshi@quicinc.com>
+Date: Fri, 7 Feb 2025 19:13:21 +0530
 Subject: [PATCH] add MSM backend with xml schema
 
 ---
  src/gbm/backends/msm/buffer_alloc.c           |  105 ++
  src/gbm/backends/msm/buffer_alloc.h           |   13 +
- src/gbm/backends/msm/buffer_layout.c          |  242 ++++
+ src/gbm/backends/msm/buffer_layout.c          |  262 ++++
  src/gbm/backends/msm/buffer_layout.h          |   20 +
- .../backends/msm/default_fmt_alignment.xml    | 1197 +++++++++++++++++
+ .../backends/msm/default_fmt_alignment.xml    | 1211 +++++++++++++++++
  src/gbm/backends/msm/gbm_msm.c                |  744 ++++++++++
  src/gbm/backends/msm/gbm_msm.h                |   43 +
  src/gbm/backends/msm/gbm_msm_int.h            |   36 +
@@ -17,7 +17,7 @@ Subject: [PATCH] add MSM backend with xml schema
  src/gbm/meson.build                           |   34 +
  src/test/gbmtest.c                            |  502 +++++++
  src/test/meson.build                          |   28 +
- 13 files changed, 3236 insertions(+)
+ 13 files changed, 3270 insertions(+)
  create mode 100644 src/gbm/backends/msm/buffer_alloc.c
  create mode 100644 src/gbm/backends/msm/buffer_alloc.h
  create mode 100644 src/gbm/backends/msm/buffer_layout.c
@@ -163,10 +163,10 @@ index 0000000..cbd7ddd
 +int bo_offset(int fd, uint32_t handle, uint64_t *offset);
 diff --git a/src/gbm/backends/msm/buffer_layout.c b/src/gbm/backends/msm/buffer_layout.c
 new file mode 100644
-index 0000000..119300c
+index 0000000..48e38a2
 --- /dev/null
 +++ b/src/gbm/backends/msm/buffer_layout.c
-@@ -0,0 +1,242 @@
+@@ -0,0 +1,262 @@
 +/*
 + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
 + * SPDX-License-Identifier: BSD-3-Clause-Clear
@@ -248,6 +248,11 @@ index 0000000..119300c
 +   uint32_t height_align_factor = info->planes[plane].height_align;
 +
 +   if (ubwc_enabled(descriptor)) {
++      if (!info->planes[plane].meta_info) {
++	fprintf(stderr,"UBWC not supported for this format \n");
++	return -1;
++      }
++
 +      pitch_align_factor = info->planes[plane].meta_info->pitch_align;
 +      height_align_factor = info->planes[plane].meta_info->height_align;
 +   }
@@ -280,6 +285,10 @@ index 0000000..119300c
 +
 +   uint32_t alignment = info->planes[plane].pitch_align;
 +   if (ubwc_enabled(descriptor)) {
++      if (!info->planes[plane].meta_info) {
++        fprintf(stderr,"UBWC not supported for this format \n");
++        return -1;
++      }
 +      alignment = info->planes[plane].meta_info->pitch_align;
 +   }
 +
@@ -310,6 +319,13 @@ index 0000000..119300c
 +   if (get_stride(descriptor, plane, &stride) != 0)
 +      return -1;
 +
++   if (ubwc_enabled(descriptor)) {
++      if (!info->planes[plane].meta_info) {
++         fprintf(stderr,"UBWC not supported for this format \n");
++         return -1;
++      }
++   }
++
 +   uint32_t alignment = (ubwc_enabled(descriptor)) ? info->planes[plane].meta_info->size_align : info->size_align;
 +
 +   *plane_size = ALIGN(stride * alignedh, alignment);
@@ -336,6 +352,10 @@ index 0000000..119300c
 +   if (!ubwc_enabled(descriptor)) {
 +      *metabuffer_size = 0;
 +      return 0;
++   }
++   if (!info->planes[plane].meta_info) {
++      fprintf(stderr,"UBWC not supported for this format \n");
++      return -1;
 +   }
 +
 +   uint32_t block_width = info->planes[plane].meta_info->block_width;
@@ -437,10 +457,10 @@ index 0000000..cb23e71
 +uint32_t get_plane_height(uint32_t buffer_height, uint32_t format, int plane);
 diff --git a/src/gbm/backends/msm/default_fmt_alignment.xml b/src/gbm/backends/msm/default_fmt_alignment.xml
 new file mode 100644
-index 0000000..8c57048
+index 0000000..3f569a2
 --- /dev/null
 +++ b/src/gbm/backends/msm/default_fmt_alignment.xml
-@@ -0,0 +1,1197 @@
+@@ -0,0 +1,1211 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<formats>
 +   <format>
@@ -453,6 +473,13 @@ index 0000000..8c57048
 +           <plane_name>ARGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
++           <meta_info>
++             <block_width>16</block_width>
++             <block_height>4</block_height>
++             <pitch_align>64</pitch_align>
++             <height_align>16</height_align>
++             <size_align>4096</size_align>
++           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>
@@ -487,9 +514,16 @@ index 0000000..8c57048
 +       <bpp>4</bpp>
 +       <planes>
 +         <plane>
-+           <plane_name>ARGB</plane_name>
++           <plane_name>XRGB</plane_name>
 +           <pitch_align>64</pitch_align>
 +           <height_align>1</height_align>
++           <meta_info>
++             <block_width>16</block_width>
++             <block_height>4</block_height>
++             <pitch_align>64</pitch_align>
++             <height_align>16</height_align>
++             <size_align>4096</size_align>
++           </meta_info>
 +         </plane>
 +       </planes>
 +     </constraints>

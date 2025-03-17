@@ -10,14 +10,14 @@ LIC_FILES_CHKSUM = " \
     ${BSD-3-Clause_LICENSE};md5=ef93dc3f1e145b6c1f89b90a5230ef8a \
 "
 
-PACKAGE_ARCH = "${SOC_ARCH}"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 FILESPATH   =+ "${WORKSPACE}:"
 SRC_URI     =  "file://display/hardware/qcom/display/"
 
 S = "${WORKDIR}/display/hardware/qcom/display"
 
-EXTRA_OECONF += " --with-sanitized-headers=${STAGING_INCDIR}/linux-kernel-qcom/usr/include"
+EXTRA_OECONF += " --with-sanitized-headers=${STAGING_INCDIR}/linux-msm/usr/include"
 EXTRA_OECONF += " --enable-displayle"
 
 PACKAGECONFIG ?= " \
@@ -28,11 +28,11 @@ PACKAGECONFIG[drm] = "--enable-sdmhaldrm, --disable-sdmhaldrm, libdrm, libdrm"
 
 DEPENDS += " grpc grpc-native protobuf protobuf-native "
 DEPENDS += "libdrm \
-            virtual/libgbm \
-            linux-kernel-qcom-headers \
+            libgbm \
+            linux-msm-headers \
             "
 
-DEPENDS:append:qcm6490 = "qcom-displaydlkm"
+DEPENDS:append:qcs610_odk_64 = "qcom-displaydlkm mmdlkm"
 
 QDCM_JSON = "qdcm_calib_data_nt36672e_lcd_video_mode_dsi_novatek_panel_with_DSC.json"
 

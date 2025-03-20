@@ -1,6 +1,6 @@
 SUMMARY = "QCOM Display package groups"
 
-PACKAGE_ARCH = "${SOC_ARCH}"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit packagegroup
 
@@ -8,14 +8,15 @@ LICENSE = "BSD-3-Clause & BSD-3-Clause-Clear"
 
 PROVIDES = "${PACKAGES}"
 
-PACKAGES = "${PN}"
+PACKAGES = ' \
+    packagegroup-qcom-display \
+    '
 
-RDEPENDS:${PN} = " \
-    libcec \
-    "
+RDEPENDS:packagegroup-qcom-display = ' \
+     mmdlkm \
+     qcom-displaydlkm \
+     qcom-displaydevicetree \
+     qcom-display-hal-linux  \
+     '
 
-RDEPENDS:${PN}:append:qcm6490:qcom-custom-bsp = " \
-    qcom-display-hal-linux \
-    kernel-module-displaydlkm \
-    qcom-displaydevicetree \
-"
+DEPENDS += " qcom-displaydevicetree"

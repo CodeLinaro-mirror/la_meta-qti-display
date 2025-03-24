@@ -42,6 +42,9 @@ PACKAGECONFIG:append:kalama = "sdm clients egl shell-desktop disablepowerkey scr
                                shell-fullscreen shell-ivi image-jpeg"
 
 do_install:append:kalama() {
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'lxc', 'true', 'false', d)}; then
+        sed -i '/repaint-window=10/a require-input=false' ${WORKDIR}/weston-kalama.ini
+    fi
     install -m 0644 ${WORKDIR}/weston-kalama.ini -D ${D}${sysconfdir}/xdg/weston/weston.ini
 }
 

@@ -4,7 +4,7 @@ LICENSE = "MIT"
 FILESEXTRAPATHS:prepend := "${THISDIR}/weston-launch:"
 FILESPATH =+ "${WORKSPACE}:"
 
-SRC_URI:append:qcom = "   file://weston.png \
+SRC_URI:append:qcom = " file://weston.png \
               file://weston.desktop \
               file://xwayland.weston-start \
               file://systemd-notify.weston-start"
@@ -19,6 +19,7 @@ SRC_URI:append:qcm6490:qcom-custom-bsp = "  \
               file://0001-weston-add-protocol-extension-for-power-and-brightne.patch \
               file://0001-weston-add-surface-position-and-power-key.patch \
               file://0001-weston-add-support-color-calibration.patch \
+	      file://0001-DNM-weston-temp-fix-for-avoid-compilation.patch \
               "
 
 SRC_URI:append:qcs9100 = "  file://0001-weston-add-sdm-option.patch \

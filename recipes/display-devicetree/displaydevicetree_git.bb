@@ -32,12 +32,13 @@ do_configure () {
 do_compile() {
     cd ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform  && \
     BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
+    KBUILD_OPTIONS="ARCH=arm64" \
     EXT_MODULES=../../display/vendor/qcom/opensource/display-devicetree \
     ROOTDIR=${WORKSPACE}/ \
     MODULE_OUT=${WORKDIR}/display/vendor/qcom/opensource/display-devicetree \
     KERNEL_KIT=${KERNEL_OUT_PATH}/ \
     OUT_DIR=temp_out_dir \
-    ./build/build_module.sh
+    ./build/build_module.sh dtbs
 }
 
 do_deploy() {

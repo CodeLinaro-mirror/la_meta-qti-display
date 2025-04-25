@@ -35,6 +35,7 @@ do_compile[lockfiles] = "${TMPDIR}/build_modules.lock"
 
 do_configure() {
 	cp -f ${WORKSPACE}/display/vendor/qcom/opensource/display-drivers/Makefile.am ${WORKSPACE}/display/vendor/qcom/opensource/display-drivers/Makefile
+      ln -sf ${WORKSPACE}/display/vendor/qcom/opensource/mm-drivers/hfi_core/inc/hfi_interface.h ${WORKSPACE}/display/vendor/qcom/opensource/display-drivers/msm/hfi/hfi_interface.h
 }
 
 do_compile() {

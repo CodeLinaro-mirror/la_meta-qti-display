@@ -19,7 +19,8 @@ SRC_URI:append:qcs610-odk-64 = "  \
               file://0001-weston-add-protocol-extension-for-power-and-brightne.patch \
               file://0001-weston-add-surface-position-and-power-key.patch \
               file://0001-weston-add-support-color-calibration.patch \
-	      file://0001-DNM-weston-temp-fix-for-avoid-compilation.patch \
+	      file://0001-weston-Add-gbm_priv.h-file-for-downstream-utility.patch \
+	      file://0001-weston-removed-property-vault-service.patch \
               "
 
 SRC_URI:append:qcs9100 = "  file://0001-weston-add-sdm-option.patch \
@@ -40,7 +41,7 @@ SRC_URI:append:qcs615  = "  file://0001-weston-add-sdm-option.patch \
                             "
 
 DEPENDS:append:qcom-custom-bsp = " property-vault qcom-libdmabufheap"
-DEPENDS:append:qcs610-odk-64 = " property-vault qcom-display-hal-linux libgbm seatd"
+DEPENDS:append:qcs610-odk-64 = " qcom-display-hal-linux libgbm seatd"
 
 EXTRA_OEMESON += "-Dbackend-default=auto -Dbackend-rdp=false"
 
@@ -69,9 +70,7 @@ PACKAGECONFIG[sdm] = "-Dbackend-sdm=true,-Dbackend-sdm=false"
 # Weston with disabling display power key
 PACKAGECONFIG[disablepowerkey] = "-Ddisable-power-key=true,-Ddisable-power-key=false"
 
-#PACKAGECONFIG[egl] = "-Drenderer-gl=false"
-
-LDFLAGS:append:qcs610-odk-64  = " -ldrmutils -ldisplaydebug -lglib-2.0 -ldmabufheap"
+LDFLAGS:append:qcs610-odk-64  = " -lcutils -ldrmutils -ldisplaydebug -lglib-2.0 -ldmabufheap"
 
 #meson script's CPP flags
 CXXFLAGS:append:qcs610-odk-64  = " -I${STAGING_INCDIR}/sdm"

@@ -1,11 +1,11 @@
 
 RDEPENDS:packagegroup-qcom-display += " \
         libdrm \
-	gbm \
+        gbm \
         wayland \
         wayland-protocols \
         weston \
-	"
+        "
 
 RDEPENDS:${PN}:append:qcom = " \
     libdrm \

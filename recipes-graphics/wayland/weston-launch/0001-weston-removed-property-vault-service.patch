@@ -1,0 +1,88 @@
+#This patch file is from Qualcomm Technologies, Inc. and is provided under the following license:
+#Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+#SPDX-License-Identifier: BSD-3-Clause-Clear
+From 4f76c9c0e42b8300d9e2b95ad61056fa35efd762 Mon Sep 17 00:00:00 2001
+From: Venkatesh Kotha <vekkoth@qti.qualcomm.com>
+Date: Mon, 28 Apr 2025 16:05:58 +0530
+Subject: weston: removed property-vault service
+
+Upstream-Status: Inappropriate [Downstream]
+
+Signed-off-by: Venkatesh Kotha <venkkoth@qti.qualcomm.com>
+---
+ libweston/backend-sdm/meson.build                        | 9 ++++-----
+ .../backend-sdm/sdm-service/sdm_display_connect.cpp      | 2 +-
+ .../backend-sdm/sdm-service/sdm_display_debugger.cpp     | 2 +-
+ meson.build                                              | 9 ++++-----
+ 4 files changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/libweston/backend-sdm/meson.build b/libweston/backend-sdm/meson.build
+index 3b8324d1..62af497f 100644
+--- a/libweston/backend-sdm/meson.build
++++ b/libweston/backend-sdm/meson.build
+@@ -37,12 +37,11 @@ srcs_drm = [
+ deps_drm = [
+ 	dep_libdl,
+ 	dep_libweston_private,
+-	dep_session_helper,
+-	dep_libdrm,
+-	dep_libinput_backend,
++        dep_session_helper,
++        dep_libdrm,
++        dep_libinput_backend,
+ 	dependency('libudev', version: '>= 136'),
+-	dep_property,
+-	dep_glib,
++        dep_glib,
+ ]
+ 
+ dep_gbm = dependency('gbm', required: false)
+diff --git a/libweston/backend-sdm/sdm-service/sdm_display_connect.cpp b/libweston/backend-sdm/sdm-service/sdm_display_connect.cpp
+index 2e707386..c36603f7 100644
+--- a/libweston/backend-sdm/sdm-service/sdm_display_connect.cpp
++++ b/libweston/backend-sdm/sdm-service/sdm_display_connect.cpp
+@@ -27,7 +27,7 @@
+ */
+ 
+ #include <display_properties.h>
+-#include <properties.h>
++#include <cutils/properties.h>
+ 
+ #include "sdm-service/sdm_display.h"
+ #include "sdm-service/sdm_display_connect.h"
+diff --git a/libweston/backend-sdm/sdm-service/sdm_display_debugger.cpp b/libweston/backend-sdm/sdm-service/sdm_display_debugger.cpp
+index a5be72de..87ed0615 100644
+--- a/libweston/backend-sdm/sdm-service/sdm_display_debugger.cpp
++++ b/libweston/backend-sdm/sdm-service/sdm_display_debugger.cpp
+@@ -28,7 +28,7 @@
+ */
+ 
+ #include <display_properties.h>
+-#include <properties.h>
++#include <cutils/properties.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <utils/constants.h>
+diff --git a/meson.build b/meson.build
+index 5b4dd3bb..7d723706 100644
+--- a/meson.build
++++ b/meson.build
+@@ -150,11 +150,10 @@ dep_libdrm_headers = dep_libdrm.partial_dependency(compile_args: true)
+ dep_threads = dependency('threads')
+ dep_gbm = cc.find_library('gbm', required: false)
+ if get_option('backend-sdm')
+-	dep_glib = dependency('glib-2.0')
+-	dep_property = cc.find_library('propertyvault', required: true)
+-	dep_libsdmcore = cc.find_library('sdmcore')
+-	dep_libsdmutils = cc.find_library('sdmutils')
+-	dep_libsdmdal = cc.find_library('sdmdal')
++        dep_glib = dependency('glib-2.0')
++        dep_libsdmcore = cc.find_library('sdmcore')
++        dep_libsdmutils = cc.find_library('sdmutils')
++        dep_libsdmdal = cc.find_library('sdmdal')
+ 	dep_libdrmutils = cc.find_library('drmutils')
+ 	dep_libqdcmgrpc = cc.find_library('qdcmgrpc')
+ 	dep_libprotobuf = cc.find_library('protobuf')
+-- 
+2.49.0
+

@@ -9,8 +9,7 @@ LIC_FILES_CHKSUM = " \
 ${BSD-3-Clause-Clear_LICENSE};md5=01550572dbf950bfb945602fe114d132 \
 ${BSD-3-Clause_LICENSE};md5=966a1bac2e99d152d17ed2b6d7ad8bab"
 
-DEPENDS = "glib-2.0 linux-msm-headers qcom-displaydlkm wayland"
-#DEPENDS:append:qcs610_odk_64 = " qcom-displaydlkm"
+DEPENDS = "glib-2.0 qcom-displaydlkm wayland"
 
 PROVIDES += "virtual/libgbm libgbm"
 
@@ -43,7 +42,7 @@ PACKAGE_ARCH ?= "${MACHINE_ARCH}"
 
 # The headers for GBM are contained in a completely separate package. Force
 # that subsidiary package to be installed anytime that gbm-dev is.
-RPROVIDES:${PN} += "virtual/libgbm"
+RPROVIDES:${PN} += "libgbm"
 
 do_install:append(){
     install -d ${D}${libdir}/

@@ -1,0 +1,106 @@
+#This patch file is from Qualcomm Technologies, Inc. and is provided under the following license:
+#Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+#SPDX-License-Identifier: BSD-3-Clause-Clear
+
+From d12993eb2f3bc47882a0e1cc3cd60ed450a514bf Mon Sep 17 00:00:00 2001
+From: Kevil Patel <kevipate@qti.qualcomm.com>
+Date: Fri, 23 May 2025 17:13:58 +0530
+Subject: [PATCH] weston: Add support for custom client window positioning
+
+Set client's window to a custom x, y position in xdg_shell protocol
+
+Upstream-Status: Inappropriate [Downstream]
+
+Signed-off-by: Kevil Patel <kevipate@qti.qualcomm.com>
+---
+ libweston/desktop/internal.h  |  6 ++++++
+ libweston/desktop/surface.c   | 13 +++++++++++++
+ libweston/desktop/xdg-shell.c | 24 ++++++++++++++++++++++++
+ 3 files changed, 43 insertions(+)
+
+diff --git a/libweston/desktop/internal.h b/libweston/desktop/internal.h
+index 74a65f9..c9f78b3 100644
+--- a/libweston/desktop/internal.h
++++ b/libweston/desktop/internal.h
+@@ -216,6 +216,12 @@ weston_desktop_surface_set_relative_to(struct weston_desktop_surface *surface,
+ 				       struct weston_coord_surface offset, bool use_geometry);
+ void
+ weston_desktop_surface_unset_relative_to(struct weston_desktop_surface *surface);
++
++void
++weston_desktop_surface_set_position(struct weston_desktop *desktop,
++                                       struct weston_desktop_surface *dsurface,
++                                   uint32_t x, uint32_t y);
++
+ void
+ weston_desktop_surface_popup_grab(struct weston_desktop_surface *popup,
+ 				  struct weston_desktop_surface *parent,
+diff --git a/libweston/desktop/surface.c b/libweston/desktop/surface.c
+index 06a06e0..03c31a1 100644
+--- a/libweston/desktop/surface.c
++++ b/libweston/desktop/surface.c
+@@ -786,6 +786,19 @@ weston_desktop_surface_set_geometry(struct weston_desktop_surface *surface,
+ 	surface->geometry = geometry;
+ }
+ 
++void
++weston_desktop_surface_set_position(struct weston_desktop *desktop,
++                                       struct weston_desktop_surface *dsurface,
++                                   uint32_t x, uint32_t y)
++{
++       struct weston_coord_global pos;
++       struct weston_desktop_view *view;
++       assert(!dsurface->use_geometry);
++       pos.c = weston_coord(x, y);
++       wl_list_for_each(view, &dsurface->view_list, link)
++	       weston_view_set_position(view->view, pos);
++}
++
+ void
+ weston_desktop_surface_set_relative_to(struct weston_desktop_surface *surface,
+ 				       struct weston_desktop_surface *parent,
+diff --git a/libweston/desktop/xdg-shell.c b/libweston/desktop/xdg-shell.c
+index 0ec57c7..547e807 100644
+--- a/libweston/desktop/xdg-shell.c
++++ b/libweston/desktop/xdg-shell.c
+@@ -463,6 +463,29 @@ weston_desktop_xdg_toplevel_protocol_move(struct wl_client *wl_client,
+ 	weston_desktop_api_move(toplevel->base.desktop, dsurface, seat, serial);
+ }
+ 
++static void
++weston_desktop_xdg_toplevel_protocol_set_position(struct wl_client *wl_client,
++                                         struct wl_resource *resource,
++                                         uint32_t x,
++                                         uint32_t y)
++{
++       struct weston_desktop_surface *dsurface =
++               wl_resource_get_user_data(resource);
++       struct weston_desktop_xdg_toplevel *toplevel =
++               weston_desktop_surface_get_implementation_data(dsurface);
++
++       if (!toplevel->base.configured) {
++               wl_resource_post_error(toplevel->resource,
++                                      XDG_SURFACE_ERROR_NOT_CONSTRUCTED,
++                                      "Surface has not been configured yet");
++               return;
++       }
++
++       if (toplevel->next.state.maximized || toplevel->next.state.fullscreen)
++               return;
++       weston_desktop_surface_set_position(toplevel->base.desktop, dsurface, x, y);
++}
++
+ static void
+ weston_desktop_xdg_toplevel_protocol_resize(struct wl_client *wl_client,
+ 					    struct wl_resource *resource,
+@@ -898,6 +921,7 @@ static const struct xdg_toplevel_interface weston_desktop_xdg_toplevel_implement
+ 	.set_app_id          = weston_desktop_xdg_toplevel_protocol_set_app_id,
+ 	.show_window_menu    = weston_desktop_xdg_toplevel_protocol_show_window_menu,
+ 	.move                = weston_desktop_xdg_toplevel_protocol_move,
++	.set_position        = weston_desktop_xdg_toplevel_protocol_set_position,
+ 	.resize              = weston_desktop_xdg_toplevel_protocol_resize,
+ 	.set_min_size        = weston_desktop_xdg_toplevel_protocol_set_min_size,
+ 	.set_max_size        = weston_desktop_xdg_toplevel_protocol_set_max_size,
+-- 
+2.34.1
+

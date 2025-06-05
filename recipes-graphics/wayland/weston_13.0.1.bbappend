@@ -22,6 +22,7 @@ SRC_URI:append:qcs610-odk-64 = "  \
 	      file://0001-weston-Add-gbm_priv.h-file-for-downstream-utility.patch \
 	      file://0001-weston-removed-property-vault-service.patch \
 	      file://0001-weston-Add-support-for-custom-client-window-position.patch \
+	      file://0001-Weston-GBM-support-SDM-backend-on-weston-13.patch\
               "
 
 SRC_URI:append:qcs9100 = "  file://0001-weston-add-sdm-option.patch \

@@ -1,0 +1,51 @@
+/* This patch file is from Qualcomm Technologies, Inc. and is provided under the following license:
+*  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+*  SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
+From 76ad32d5181d993f234cfd106324bd07f93a0438 Mon Sep 17 00:00:00 2001
+From: Sanjay Chitroda <ckantibh@qti.qualcomm.com>
+Date: Fri, 20 Jun 2025 18:48:54 +0530
+Subject: [PATCH] weston: fix fd leaks issue in weston
+
+Upstream-Status: Inappropriate [Downstream]
+
+- add close fd flow in gbm-buffer-backend else fd would leak
+- fd is from client through RPC, which required to close from weston
+
+Signed-off-by: Sanjay Chitroda <ckantibh@qti.qualcomm.com>
+---
+ libweston/gbm-buffer-backend.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/libweston/gbm-buffer-backend.c b/libweston/gbm-buffer-backend.c
+index f15c172..c427220 100644
+--- a/libweston/gbm-buffer-backend.c
++++ b/libweston/gbm-buffer-backend.c
+@@ -93,11 +93,23 @@ gbm_buffer_destroy(struct gbm_buffer *buffer)
+ {
+   // Destroy gbm bo if it is still valid
+   if (buffer->bo) {
++    GBM_PROTOCOL_LOG(LOG_DBG,"gbm_buffer_destroy close buffer fd[%d]\n",
++                                                        buffer->fd);
++    /*
++     * 1. data fd is from client through RPC which is new fd for weston process
++     * So these fd should be closed in weston server
++     * 2. If fd is external fd for gbm(not created by gbm) gbm would not close it
++     * So we need to close it here, not only do bo_destroy.
++     */
++    if (buffer->fd > 0)
++      close(buffer->fd);
++
+     gbm_bo_destroy(buffer->bo);
+     buffer->bo = NULL;
+   }
+ 
+   free(buffer);
++  buffer = NULL;
+ }
+ 
+ 
+-- 
+2.34.1
+

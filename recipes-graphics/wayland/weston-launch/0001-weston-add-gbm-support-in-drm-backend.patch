@@ -1,0 +1,90 @@
+/* This patch file is from Qualcomm Technologies, Inc. and is provided under the following license:
+*  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+*  SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
+From 5e5994f2ea7149a71fa4521f5ae2f1fc39c3ad2e Mon Sep 17 00:00:00 2001
+From: pginoya <pginoya@qti.qualcomm.com>
+Date: Wed, 25 Jun 2025 12:04:50 +0530
+Subject: [PATCH] weston: add gbm support in drm-backend
+
+Signe-off-by: pginoya <pginoya@qti.qualcomm.com>
+Upstream-Status: Inappropriate [Downstream]
+---
+ libweston/backend-drm/drm.c           | 10 ++++++----
+ libweston/backend-drm/meson.build     |  2 ++
+ libweston/backend-drm/state-propose.c |  3 ++-
+ 3 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/libweston/backend-drm/drm.c b/libweston/backend-drm/drm.c
+index d2daf54..6a63731 100644
+--- a/libweston/backend-drm/drm.c
++++ b/libweston/backend-drm/drm.c
+@@ -3916,7 +3916,7 @@ drm_backend_create(struct weston_compositor *compositor,
+ 	wl_list_insert(&compositor->backend_list, &b->base.link);
+ 
+ 	if (parse_gbm_format(config->gbm_format,
+-			     pixel_format_get_info(DRM_FORMAT_XRGB8888),
++			     pixel_format_get_info(DRM_FORMAT_ABGR8888),
+ 			     &b->format) < 0)
+ 		goto err_compositor;
+ 
+@@ -3952,9 +3952,6 @@ drm_backend_create(struct weston_compositor *compositor,
+ 		goto err_udev_dev;
+ 	}
+ 
+-	if (config->additional_devices)
+-		open_additional_devices(b, config->additional_devices);
+-
+ 	if (config->renderer == WESTON_RENDERER_AUTO) {
+ #ifdef BUILD_DRM_GBM
+ 		config->renderer = WESTON_RENDERER_GL;
+@@ -4063,6 +4060,11 @@ drm_backend_create(struct weston_compositor *compositor,
+ 	weston_compositor_add_debug_binding(compositor, KEY_Q,
+ 					    recorder_binding, b);
+ 
++	if (compositor->renderer->import_gbm_buffer) {
++               if (gbm_buffer_backend_setup(compositor) < 0)
++                       weston_log("Error: gbm buffer backend setup failed\n");
++       }
++
+ 	if (compositor->renderer->import_dmabuf) {
+ 		if (linux_dmabuf_setup(compositor) < 0)
+ 			weston_log("Error: initializing dmabuf "
+diff --git a/libweston/backend-drm/meson.build b/libweston/backend-drm/meson.build
+index 186c4c2..e827719 100644
+--- a/libweston/backend-drm/meson.build
++++ b/libweston/backend-drm/meson.build
+@@ -41,6 +41,8 @@ srcs_drm = [
+ 	linux_dmabuf_unstable_v1_protocol_c,
+ 	linux_dmabuf_unstable_v1_server_protocol_h,
+ 	presentation_time_server_protocol_h,
++        gbm_buffer_backend_protocol_c,
++        gbm_buffer_backend_server_protocol_h,
+ ]
+ 
+ deps_drm = [
+diff --git a/libweston/backend-drm/state-propose.c b/libweston/backend-drm/state-propose.c
+index 2b42e3d..42dfa8e 100644
+--- a/libweston/backend-drm/state-propose.c
++++ b/libweston/backend-drm/state-propose.c
+@@ -898,7 +898,7 @@ drm_assign_planes(struct weston_output *output_base)
+ 	struct drm_writeback_state *wb_state = output->wb_state;
+ 	struct weston_paint_node *pnode;
+ 	struct weston_plane *primary = &output_base->primary_plane;
+-	enum drm_output_propose_state_mode mode = DRM_OUTPUT_PROPOSE_STATE_PLANES_ONLY;
++	enum drm_output_propose_state_mode mode = DRM_OUTPUT_PROPOSE_STATE_RENDERER_ONLY;
+ 
+ 	assert(output);
+ 
+@@ -965,6 +965,7 @@ drm_assign_planes(struct weston_output *output_base)
+ 			struct weston_buffer *buffer =
+ 				ev->surface->buffer_ref.buffer;
+ 			if (buffer->type == WESTON_BUFFER_DMABUF ||
++			    buffer->type == WESTON_BUFFER_GBMBUF ||
+ 			    buffer->type == WESTON_BUFFER_RENDERER_OPAQUE)
+ 				ev->surface->keep_buffer = true;
+ 			else if (buffer->type == WESTON_BUFFER_SHM &&
+-- 
+2.34.1
+

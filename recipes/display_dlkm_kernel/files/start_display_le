@@ -2,7 +2,7 @@
 # Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
 
 # Changes from Qualcomm Innovation Center are provided under the following license:
-# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -41,13 +41,16 @@ case "$1" in
 
 	echo "done loading display_kernel module"
 	timeperiod=0
-	until [ -d /sys/class/backlight/panel0-backlight ] || [ $timeperiod -gt 20 ]
+	until { [ -d /sys/class/backlight/panel0-backlight ] && \
+		[ -d /sys/class/backlight/panel1-backlight ]; } || [ $timeperiod -gt 20 ]
 	do
 		sleep 0.1
 		((timeperiod++))
 	done
 	chown -h system:system /sys/class/backlight/panel0-backlight/brightness
 	chown -h system:system /sys/class/backlight/panel0-backlight/max_brightness
+	chown -h system:system /sys/class/backlight/panel1-backlight/brightness
+	chown -h system:system /sys/class/backlight/panel1-backlight/max_brightness
 	echo "Ownership changed to system for panel brightness nodes"
 	;;
     stop)

@@ -42,16 +42,20 @@ case "$1" in
 
 	echo "done loading display_kernel module"
 	timeperiod=0
-	until { [ -d /sys/class/backlight/panel0-backlight ] && \
-		[ -d /sys/class/backlight/panel1-backlight ]; } || [ $timeperiod -gt 20 ]
+	while ! ls /sys/class/backlight/panel*-backlight &>/dev/null && [ $timeperiod -le 20 ]
 	do
 		sleep 0.1
-		((timeperiod++))
+		timeperiod=$((timeperiod + 1))
 	done
-	chown -h system:system /sys/class/backlight/panel0-backlight/brightness
-	chown -h system:system /sys/class/backlight/panel0-backlight/max_brightness
-	chown -h system:system /sys/class/backlight/panel1-backlight/brightness
-	chown -h system:system /sys/class/backlight/panel1-backlight/max_brightness
+	for panel in /sys/class/backlight/panel*-backlight; do
+	    if [ -d "$panel" ]; then
+	        for node in brightness max_brightness; do
+	            if [ -e "$panel/$node" ]; then
+	                chown -h system:system $panel/$node  # Change to valid user/group if needed
+	            fi
+	        done
+	    fi
+	done
 	echo "Ownership changed to system for panel brightness nodes"
 	;;
     stop)

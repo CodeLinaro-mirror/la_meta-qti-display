@@ -37,6 +37,10 @@ CFLAGS:append:kera += "-Wno-error=incompatible-pointer-types \
                       -Wno-error=implicit-function-declaration \
                       -Wno-error=int-conversion"
 
+CFLAGS:append:canoe += "-Wno-error=incompatible-pointer-types \
+                      -Wno-error=implicit-function-declaration \
+                      -Wno-error=int-conversion"
+
 PACKAGECONFIG: = " \
                  egl \
                  clients \
@@ -56,6 +60,12 @@ do_install:append:sun() {
 PACKAGECONFIG:append:kera = "kms"
 
 do_install:append:kera() {
+    install -m 0644 ${WORKDIR}/weston-kera.ini -D ${D}${sysconfdir}/xdg/weston/weston.ini
+}
+
+PACKAGECONFIG:append:canoe = "kms"
+
+do_install:append:canoe() {
     install -m 0644 ${WORKDIR}/weston-kera.ini -D ${D}${sysconfdir}/xdg/weston/weston.ini
 }
 

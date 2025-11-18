@@ -12,7 +12,7 @@ SRC_URI     =  "file://display/vendor/qcom/opensource/display-core"
 S = "${WORKDIR}/display/vendor/qcom/opensource/display-core"
 CONFIG_PATH = "${WORKSPACE}/display/vendor/qcom/opensource/display-core/config"
 
-DEPENDS += " libhardware virtual/kernel libdrm drm binder displaydlkm"
+DEPENDS += " libhardware virtual/kernel libdrm drm binder displaydlkm libtinyxml2"
 
 LDFLAGS += "-llog -lhardware -lutils -lcutils"
 

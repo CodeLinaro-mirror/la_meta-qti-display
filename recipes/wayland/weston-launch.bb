@@ -23,6 +23,21 @@ do_install() {
         install -m 0755 ${S}/${DISPLAY_SERVICE_FILENAME} -D ${D}${sysconfdir}/systemd/system/init_display.service
         install -d ${D}/etc/systemd/system/multi-user.target.wants
         ln -sf /etc/systemd/system/init_display.service ${D}/etc/systemd/system/multi-user.target.wants/init_display.service
+        if ${@bb.utils.contains('DISTRO_FEATURES', 'lxc', 'true', 'false', d)}; then
+            sed -e 's/Requires=leprop.service/After=local-fs.target/' \
+                -e 's/After=leprop.service/Before=sysinit.target/' \
+                -e '/^\[Unit\]/a DefaultDependencies=no' \
+                -e '/^\[Service\]/a Type=oneshot' \
+                -e '/^Type=simple/d' \
+                -e 's/WantedBy=multi-user.target/WantedBy=sysinit.target/' \
+                -i ${D}${sysconfdir}/systemd/system/init_display.service
+
+            install -d ${D}/etc/systemd/system/sysinit.target.wants
+            ln -sf /etc/systemd/system/init_display.service ${D}/etc/systemd/system/sysinit.target.wants/init_display.service
+        else
+            install -d ${D}/etc/systemd/system/multi-user.target.wants
+            ln -sf /etc/systemd/system/init_display.service ${D}/etc/systemd/system/multi-user.target.wants/init_display.service
+        fi
     else
         install -d ${D}/${sysconfdir}/init.d
         install -m755 ${S}/init_qti ${D}/${sysconfdir}/init.d/weston

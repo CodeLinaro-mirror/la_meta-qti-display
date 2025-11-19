@@ -61,9 +61,24 @@ case "$1" in
   start)
         . /etc/profile
 
+        #check tty nodes
+        if [[ ! -e "/dev/tty0" ]]; then
+                mknod -m 600 /dev/tty0 c 4 0
+        fi
+
+        if [[ ! -e "/dev/tty1" ]]; then
+                mknod -m 600 /dev/tty1 c 4 1
+        fi
+
         # This is all a nasty hack
         if test -z "$XDG_RUNTIME_DIR"; then
             export XDG_RUNTIME_DIR=/run/user/root
+            mkdir -p $XDG_RUNTIME_DIR
+            chmod 0770 $XDG_RUNTIME_DIR
+        fi
+
+        #make sure /run/user/root exist, not only define XDG_RUNTIME_DIR
+        if [[ ! -e "$XDG_RUNTIME_DIR" ]]; then
             mkdir -p $XDG_RUNTIME_DIR
             chmod 0770 $XDG_RUNTIME_DIR
         fi
@@ -81,7 +96,7 @@ case "$1" in
         if grep -q '^backend=drm-backend.so' "$cfg_file"; then
             echo 0 > /sys/module/drm/parameters/vblankoffdelay
         fi
-        weston --idle-time=0 --log=/tmp/weston.log --config="$cfg_file" &
+        weston --log=/tmp/weston.log --config="$cfg_file" --socket=walyland-0 &
 
         # Wait wayland socket node create.
         filename=$(find $XDG_RUNTIME_DIR -maxdepth 1 -name 'wayland-*' -print -quit)

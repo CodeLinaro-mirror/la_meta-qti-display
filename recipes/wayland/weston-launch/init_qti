@@ -96,7 +96,7 @@ case "$1" in
         if grep -q '^backend=drm-backend.so' "$cfg_file"; then
             echo 0 > /sys/module/drm/parameters/vblankoffdelay
         fi
-        weston --log=/tmp/weston.log --config="$cfg_file" --socket=walyland-0 &
+        weston --log=/tmp/weston.log --config="$cfg_file" --socket=wayland-0 &
 
         # Wait wayland socket node create.
         filename=$(find $XDG_RUNTIME_DIR -maxdepth 1 -name 'wayland-*' -print -quit)

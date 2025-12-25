@@ -39,6 +39,10 @@ do_configure() {
 
 do_compile() {
 
+    if [ ! -L "${KERNEL_PLATFORM_PATH}/vendor/qcom/opensource/mm-drivers" ]; then
+        ln -sf ${WORKSPACE}/display/vendor/qcom/opensource/mm-drivers  ${WORKSPACE}/vendor/qcom/opensource/mm-drivers
+    fi
+
     cd ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform  && \
 
     BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \

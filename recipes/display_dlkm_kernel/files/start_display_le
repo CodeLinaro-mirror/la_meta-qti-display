@@ -38,6 +38,12 @@ case "$1" in
 	echo -n "Starting/Loading display module: "
 
 	echo "display:start/load" > /dev/kmsg
+	if [ -f "$MODULE_BASE/msm_hfi_core.ko" ]; then
+		insmod $MODULE_BASE/msm_hfi_core.ko $2
+		echo "msm_hfi_core.ko found. flashing ..." > /dev/kmsg
+	else
+		echo "msm_hfi_core.ko not found, skipping..." > /dev/kmsg
+	fi
 	insmod $MODULE_BASE/msm_drm.ko $2
 
 	echo "done loading display_kernel module"
@@ -72,6 +78,3 @@ case "$1" in
 esac
 
 exit 0
-
-
-

@@ -17,5 +17,8 @@ RDEPENDS:packagegroup-qti-display = ' \
     display-hal-linux \
     sdm-comp-linux \
     displaydlkm \
+    ${@bb.utils.contains('VM_TARGET', 'canoe', 'mmdrivers-hficore-dlkm', '', d)} \
     '
 DEPENDS += " displaydevicetree"
+DEPENDS += "${@bb.utils.contains('VM_TARGET', 'canoe', 'hficore-devicetree', '', d)}"
+

@@ -1,0 +1,147 @@
+/* This patch file is from Qualcomm Technologies, Inc. and is provided under the following license:
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear
+ */
+From 0149b03d65a0f9e1d65dbe1eda49af7b25300a2f Mon Sep 17 00:00:00 2001
+From: Nabige Aala <naala@qti.qualcomm.com>
+Date: Fri, 28 Nov 2025 16:50:39 +0530
+Subject: [PATCH] meson: Add new strings compatible with opensource
+
+Signed-off-by: Boreddy Mahidhar <bmahidha@qti.qualcomm.com>
+Upstream-Status: Pending
+---
+ meson_options.txt | 45 ++++++++++++++++++++++++++-------------------
+ 1 file changed, 26 insertions(+), 19 deletions(-)
+
+diff --git a/meson_options.txt b/meson_options.txt
+index 8af33f1c..33571482 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -29,98 +29,105 @@ option(
+   'intel',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for Intel's KMS API.''',
+ )
+ option(
+   'radeon',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for radeons's KMS API.''',
+ )
+ option(
+   'amdgpu',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for amdgpu's KMS API.''',
+ )
+ option(
+   'nouveau',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for nouveau's KMS API.''',
+ )
+ option(
+   'vmwgfx',
+   type : 'combo',
+-  value : 'true',
+-  choices : ['true', 'false', 'auto'],
++  value : 'enabled',
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for vmgfx's KMS API.''',
+ )
+ option(
+   'omap',
+   type : 'combo',
+-  value : 'false',
+-  choices : ['true', 'false', 'auto'],
++  value : 'disabled',
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for OMAP's experimental KMS API.''',
+ )
+ option(
+   'exynos',
+   type : 'combo',
+-  value : 'false',
+-  choices : ['true', 'false', 'auto'],
++  value : 'disabled',
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for EXYNOS's experimental KMS API.''',
+ )
+ option(
+   'freedreno',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for freedreno's KMS API.''',
+ )
+ option(
+   'tegra',
+   type : 'combo',
+-  value : 'false',
+-  choices : ['true', 'false', 'auto'],
++  value : 'disabled',
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for Tegra's experimental KMS API.''',
+ )
+ option(
+   'vc4',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for vc4's KMS API.''',
+ )
+ option(
+   'etnaviv',
+   type : 'combo',
+-  value : 'false',
+-  choices : ['true', 'false', 'auto'],
++  value : 'disabled',
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : '''Enable support for etnaviv's experimental KMS API.''',
+ )
+ option(
+   'cairo-tests',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : 'Enable support for Cairo rendering in tests.',
+ )
++option(
++  'tests',
++  type : 'combo',
++  value : 'auto',
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
++  description : 'Enable support for tests.',
++)
+ option(
+   'man-pages',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : 'Enable manpage generation and installation.',
+ )
+ option(
+   'valgrind',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['true', 'false', 'auto'],
++  choices : ['true', 'false', 'auto', 'enabled', 'disabled'],
+   description : 'Build libdrm with valgrind support.',
+ )
+ option(
+-- 
+2.34.1
+

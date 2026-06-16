@@ -12,7 +12,7 @@ SRC_URI     =  "file://display/vendor/qcom/opensource/display-core"
 S = "${WORKDIR}/display/vendor/qcom/opensource/display-core"
 CONFIG_PATH = "${WORKSPACE}/display/vendor/qcom/opensource/display-core/config"
 
-DEPENDS += " libhardware virtual/kernel libdrm drm binder displaydlkm"
+DEPENDS += " libhardware virtual/kernel libdrm drm binder displaydlkm libtinyxml2 display-ship"
 
 LDFLAGS += "-llog -lhardware -lutils -lcutils"
 
@@ -30,6 +30,7 @@ CPPFLAGS += "-I${WORKSPACE}/display/vendor/qcom/opensource/display-intf/snapallo
 CPPFLAGS += "-I${S}/libdebug"
 CPPFLAGS += "-I${STAGING_INCDIR}/libdrm"
 CPPFLAGS += "-I${STAGING_KERNEL_BUILDDIR}/usr/include"
+CPPFLAGS += "-I${STAGING_INCDIR}/display-color"
 CPPFLAGS += "-DTRUSTED_VM"
 CPPFLAGS += "-fno-operator-names"
 

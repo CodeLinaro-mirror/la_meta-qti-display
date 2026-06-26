@@ -13,6 +13,7 @@ S = "${WORKDIR}/display/vendor/qcom/opensource/display-core"
 CONFIG_PATH = "${WORKSPACE}/display/vendor/qcom/opensource/display-core/config"
 
 DEPENDS += " libhardware virtual/kernel libdrm drm binder displaydlkm libtinyxml2"
+DEPENDS += "display-ship"
 
 LDFLAGS += "-llog -lhardware -lutils -lcutils"
 
@@ -33,6 +34,7 @@ CPPFLAGS += "-I${STAGING_INCDIR}/libdrm"
 CPPFLAGS += "-I${STAGING_KERNEL_BUILDDIR}/usr/include"
 CPPFLAGS += "-DTRUSTED_VM"
 CPPFLAGS += "-fno-operator-names"
+CPPFLAGS += "-I${STAGING_INCDIR}/display-color"
 
 do_install:append () {
   cp -fR ${S}/include/* ${STAGING_INCDIR}/

@@ -12,7 +12,7 @@ SRC_URI     =  "file://display/vendor/qcom/opensource/display-core"
 S = "${WORKDIR}/display/vendor/qcom/opensource/display-core"
 CONFIG_PATH = "${WORKSPACE}/display/vendor/qcom/opensource/display-core/config"
 
-DEPENDS += " libhardware virtual/kernel libdrm drm binder displaydlkm"
+DEPENDS += " libhardware virtual/kernel libdrm drm binder displaydlkm libtinyxml2"
 
 LDFLAGS += "-llog -lhardware -lutils -lcutils"
 
@@ -27,6 +27,7 @@ CPPFLAGS += "-I${WORKSPACE}/system/core/libion/include"
 CPPFLAGS += "-I${WORKSPACE}/display/vendor/qcom/opensource/commonsys-intf/display/include"
 CPPFLAGS += "-I${WORKSPACE}/display/vendor/qcom/opensource/display-intf/common"
 CPPFLAGS += "-I${WORKSPACE}/display/vendor/qcom/opensource/display-intf/snapalloc/"
+CPPFLAGS += "-I${WORKSPACE}/display/vendor/qcom/proprietary/display/color/qrtc/inc"
 CPPFLAGS += "-I${S}/libdebug"
 CPPFLAGS += "-I${STAGING_INCDIR}/libdrm"
 CPPFLAGS += "-I${STAGING_KERNEL_BUILDDIR}/usr/include"

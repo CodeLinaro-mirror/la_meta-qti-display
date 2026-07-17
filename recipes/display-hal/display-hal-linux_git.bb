@@ -15,7 +15,7 @@ SRC_URI = "file://display/vendor/qcom/opensource/display-core"
 S = "${WORKDIR}/display/vendor/qcom/opensource/display-core"
 
 DEPENDS += "virtual/kernel libdrm binder displaydlkm libtinyxml2"
-DEPENDS += "linux-msm-headers display-commonsys libcutils displaydlkm-headers"
+DEPENDS += "libhardware linux-msm-headers display-commonsys libcutils displaydlkm-headers"
 DEPENDS += "display-ship-linux"
 DEPENDS:remove:qrbx210 = "display-ship-linux"
 

@@ -15,10 +15,10 @@ PACKAGES = ' \
 RDEPENDS:packagegroup-qti-display = ' \
     libdrm \
     display-hal-linux \
-    mmdlkm \
+    ${@bb.utils.contains("MACHINE_FEATURES", "qti-vm", "", "mmdlkm", d)} \
     displaydlkm \
     gbm \
-    weston \
+    ${@bb.utils.contains("DISTRO_FEATURES", "wayland", "weston", "", d)} \
     libcec \
     '
 

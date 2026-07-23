@@ -3,9 +3,9 @@ inherit autotools pkgconfig
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 DESCRIPTION = "display Library"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
-${LICENSE};md5=3775480a712fc46a69647678acb234cb"
+${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 
 PR = "r8"
 
@@ -25,7 +25,9 @@ CPPFLAGS += "-I${WORKSPACE}/system/core/libsync/include"
 CPPFLAGS += "-I${WORKSPACE}/system/core/libion/include"
 CPPFLAGS += "-I${S}/include"
 CPPFLAGS += "-I${S}/libformatutils/inc"
+CPPFLAGS += "-I${STAGING_INCDIR}/sdm"
 CPPFLAGS += "-I${STAGING_KERNEL_BUILDDIR}/usr/include"
+CPPFLAGS += "-I${STAGING_INCDIR}/linux-msm/usr/include"
 
 do_install:append () {
     install -d ${D}/${includedir}/
@@ -39,4 +41,4 @@ do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 SOLIBS = ".so"
 FILES_SOLIBSDEV = ""
-FILES_${PN} +="/usr/data/display/vendor_display_build.prop"
+FILES:${PN} +="/usr/data/display/vendor_display_build.prop"

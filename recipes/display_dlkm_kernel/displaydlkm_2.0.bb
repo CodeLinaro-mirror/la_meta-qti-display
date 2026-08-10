@@ -58,7 +58,7 @@ do_compile() {
 do_strip_and_sign_modules() {
     install -m 0755 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm_drm.ko -D ${WORKDIR}/msm_drm.ko
      # strip debug symbols and sign the module
-    ${STAGING_DIR_NATIVE}/usr/libexec/aarch64-oe-linux/gcc/aarch64-oe-linux/${KP_STRIP_VERSION}/strip \
+    ${STAGING_DIR_NATIVE}/usr/libexec/aarch64-oe-linux/gcc/aarch64-oe-linux/${STRIP_VERSION}/strip \
         --strip-debug ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm_drm.ko
     LD_LIBRARY_PATH=${LD_PATH} ${KERNEL_PREBUILT_PATH}/dist/sign-file sha1 ${KERNEL_PREBUILT_PATH}/dist/signing_key.pem \
         ${KERNEL_PREBUILT_PATH}/dist/signing_key.x509 ${WORKDIR}/display/vendor/qcom/opensource/display-drivers/msm_drm.ko

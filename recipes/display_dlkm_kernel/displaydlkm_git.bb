@@ -21,7 +21,7 @@ SRC_URI    +=  "file://display@.service"
 SRC_URI    +=  "file://display_load.conf"
 KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 
-S = "${WORKDIR}/display/vendor/qcom/opensource/display-drivers"
+S = "${UNPACKDIR}/display/vendor/qcom/opensource/display-drivers"
 
 EXT_MODULES = "${@os.path.relpath("${S}","${KERNEL_PLATFORM_PATH}")}"
 EXTRA_OEMAKE += "TARGET_SUPPORT=${BASEMACHINE}"

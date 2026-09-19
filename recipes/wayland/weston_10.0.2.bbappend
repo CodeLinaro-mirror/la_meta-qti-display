@@ -10,7 +10,7 @@ FILESPATH =+ "${WORKSPACE}:"
 SRC_URI   = " file://weston-kalama.ini \
               file://display/vendor/qcom/opensource/display/weston/"
 
-S = "${WORKDIR}/display/vendor/qcom/opensource/display/weston"
+S = "${UNPACKDIR}/display/vendor/qcom/opensource/display/weston"
 
 inherit meson pkgconfig useradd distro_features_check
 DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0 binder"

@@ -16,7 +16,7 @@ SRC_DIR = "${WORKSPACE}/display/vendor/qcom/opensource/display/libgbm/"
 
 SRC_URI:append = " file://pkgconfig/gbm.pc"
 SRCREV = "${AUTOREV}"
-S = "${WORKDIR}/display/vendor/qcom/opensource/display/libgbm"
+S = "${UNPACKDIR}/display/vendor/qcom/opensource/display/libgbm"
 
 inherit autotools-brokensep qprebuilt pkgconfig
 

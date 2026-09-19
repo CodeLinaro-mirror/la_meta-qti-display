@@ -12,7 +12,7 @@ PR = "r8"
 FILESPATH   =+ "${WORKSPACE}:"
 SRC_URI     =  "file://display/vendor/qcom/opensource/display/sdm-composer"
 
-S = "${WORKDIR}/display/vendor/qcom/opensource/display/sdm-composer"
+S = "${UNPACKDIR}/display/vendor/qcom/opensource/display/sdm-composer"
 CFG_S = "${WORKDIR}/display/vendor/qcom/opensource/display/sdm-composer/config"
 
 DEPENDS += "display-hal-linux libsync libion display-noship libdmabufheap"

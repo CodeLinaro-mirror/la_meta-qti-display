@@ -14,7 +14,7 @@ PR = "r0"
 FILESPATH   =+ "${WORKSPACE}:"
 SRC_URI     =  "file://display/vendor/qcom/opensource/commonsys-intf/display"
 
-S = "${WORKDIR}/display/vendor/qcom/opensource/commonsys-intf/display/"
+S = "${UNPACKDIR}/display/vendor/qcom/opensource/commonsys-intf/display/"
 
 TOOLCHAIN = "sdllvm"
 ALLOW_EMPTY:${PN} = "1"

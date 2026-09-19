@@ -11,7 +11,7 @@ FILESEXTRAPATHS:prepend := "${WORKSPACE}:"
 do_compile[noexec] = "1"
 
 SRC_URI    =  "file://display/vendor/qcom/opensource/display-drivers/"
-S = "${WORKDIR}/display/vendor/qcom/opensource/display-drivers"
+S = "${UNPACKDIR}/display/vendor/qcom/opensource/display-drivers"
 
 do_install() {
 	install -d ${D}/usr/include/

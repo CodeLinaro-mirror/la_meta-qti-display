@@ -12,7 +12,7 @@ PR = "r8"
 FILESPATH   =+ "${WORKSPACE}:"
 SRC_URI     =  "file://display/hardware/qcom/display"
 
-S = "${WORKDIR}/display/hardware/qcom/display"
+S = "${UNPACKDIR}/display/hardware/qcom/display"
 
 DEPENDS += "virtual/kernel libdrm binder displaydlkm"
 DEPENDS += "libhardware linux-msm-headers display-commonsys libcutils"

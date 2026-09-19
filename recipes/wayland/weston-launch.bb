@@ -8,7 +8,7 @@ BSD-3-Clause-Clear;md5=7a434440b651f4a472ca93716d01033a"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 SRC_URI = " file://init_qti.service \
             file://init_qti"
 

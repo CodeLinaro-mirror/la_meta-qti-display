@@ -20,7 +20,7 @@ FILESEXTRAPATHS:prepend := "${WORKSPACE}:"
 SRC_URI     =  "file://display/vendor/qcom/opensource/mm-drivers/"
 KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 
-S = "${WORKDIR}/display/vendor/qcom/opensource/mm-drivers"
+S = "${UNPACKDIR}/display/vendor/qcom/opensource/mm-drivers"
 
 
 EXT_MODULES = "${@os.path.relpath("${S}","${KERNEL_PLATFORM_PATH}")}"

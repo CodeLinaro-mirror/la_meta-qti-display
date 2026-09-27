@@ -7,7 +7,7 @@ inherit linux-kernel-base deploy
 PR = "r0"
 
 DEPENDS = "rsync-native"
-DEPENDS += "bc-native bison-native"
+DEPENDS += "bc-native bison-native mmdrivers-hficore-dlkm"
 
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
